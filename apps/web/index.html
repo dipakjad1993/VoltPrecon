@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VoltPrecon — Your Real EV Range + True Cost (No Lies)</title>
+<meta name="description" content="Paste any EV, get the truth: real range (not lab), 5-yr true cost vs petrol, breakeven month, resale. 900+ models, 25 countries. Offline. No login.">
+<link rel="canonical" href="https://voltprecon.app/">
+<link rel="alternate" hreflang="x-default" href="https://voltprecon.app/">
+<link rel="alternate" hreflang="en" href="https://voltprecon.app/">
+<link rel="alternate" hreflang="hi" href="https://voltprecon.app/?lang=hi">
+<link rel="alternate" hreflang="id" href="https://voltprecon.app/?lang=id">
+<link rel="alternate" hreflang="vi" href="https://voltprecon.app/?lang=vi">
+<link rel="alternate" hreflang="pt" href="https://voltprecon.app/?lang=pt">
+<link rel="alternate" hreflang="de" href="https://voltprecon.app/?lang=de">
+<meta property="og:title" content="VoltPrecon — Your Real EV Range + True Cost">
+<meta property="og:description" content="YOUR range, not the lab lie. Physics-based real range + 5-yr cost vs petrol + resale for 920 EVs. Offline, no login.">
+<meta property="og:url" content="https://voltprecon.app/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://voltprecon.app/og-default.svg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f7f2">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0e120e">
+<meta id="themeColor" name="theme-color" content="#0e120e">
+<script>try{var __t=localStorage.getItem('vp-theme');if(__t!=='light'&&__t!=='dark')__t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.dataset.theme=__t;}catch(e){document.documentElement.dataset.theme='dark';}</script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="topbar">
+    <div class="brand">⚡ VoltPrecon <span class="tag">TRUTH ENGINE</span></div>
+    <button id="themeToggle" class="theme-toggle" aria-pressed="false" aria-label="Switch to light mode" title="Dark mode (switch to light)"><span class="theme-emoji" aria-hidden="true">🌙</span> <span class="theme-label">Dark</span></button>
+  </div>
+  <div class="sub">Real range · True cost · Resale — 920 models · 25 countries · offline · no login</div>
+  <div class="toolbar" role="group" aria-label="Language and units">
+    <label>Language <select id="lang" aria-label="Language">
+      <option value="en">English</option><option value="hi">हिन्दी</option><option value="id">Bahasa Indonesia</option><option value="vi">Tiếng Việt</option><option value="pt">Português</option><option value="de">Deutsch</option>
+    </select></label>
+    <label>Units <select id="units" aria-label="Units"><option value="km">km</option><option value="mi">miles</option></select></label>
+  </div>
+</div></header>
+<main class="wrap">
+  <nav class="stepper" aria-label="Tool progress"><ol>
+    <li id="st1" aria-current="step" tabindex="0" role="button" aria-label="Go to page 1, inputs"><span class="n">1</span> Inputs</li>
+    <li id="st2" tabindex="0" role="button" aria-label="Go to page 2, analysis"><span class="n">2</span> Analysis</li>
+    <li id="st3" tabindex="0" role="button" aria-label="Go to page 3, outputs"><span class="n">3</span> Outputs</li>
+  </ol></nav>
+  <div id="loadErr" class="err" hidden role="alert"></div>
+  <section class="card" id="step1">
+    <h2><span data-i18n="pick">1 · Pick your EV</span> <span class="prov">PAGE 1 · INPUTS ONLY</span> <span class="prov" id="dbMeta">loading offline DB…</span></h2>
+    <div class="toolbar" role="group" aria-label="Filter models">
+      <label>Segment <select id="segFilter" aria-label="Filter by segment"><option value="">All segments</option><option value="2W">2-wheeler</option><option value="3W">3-wheeler</option><option value="4W">4-wheeler</option></select></label>
+      <label>Make <select id="makeFilter" aria-label="Filter by make"><option value="">All makes</option></select></label>
+      <label>Model <select id="modelFilter" aria-label="Pick a model of the selected make"><option value="">Select a brand first…</option></select></label>
+    </div>
+    <input id="q" type="search" placeholder="Type: Nexon / Ather / Model Y / NIU / VinFast…" autocomplete="off" aria-label="Search EV model">
+    <div id="hits" class="hits" role="listbox" aria-label="Matching models"></div>
+    <div id="hitCount" class="hint" aria-live="polite"></div>
+    <div class="btnrow"><button id="moreBtn" hidden>Show more</button></div>
+    <div id="picked" class="picked" hidden></div>
+  </section>
+  <section class="card" id="step1b">
+    <h2><span data-i18n="where">2 · Where + how you ride</span> <span class="prov">PAGE 1 · INPUTS ONLY — no results yet</span></h2>
+    <div class="grid">
+      <label>Country / tariff <select id="ccy"></select></label>
+      <label>City preset <select id="city"></select></label>
+      <label>Temperature °C <input id="temp" type="number" value="32" min="-20" max="48"></label>
+      <label>km / day <input id="kmpd" type="number" value="40" min="5" max="500"></label>
+      <label>City % (rest highway) <input id="cityFrac" type="range" min="0" max="100" value="60"> <b id="cityFracV">60%</b></label>
+      <label>Cruise speed km/h <input id="speed" type="number" value="55" min="20" max="160"></label>
+      <label>Rider kg <input id="rider" type="number" value="75" min="40" max="150"></label>
+      <label>Pillion / cargo kg <input id="load" type="number" value="0" min="0" max="300"></label>
+      <label>AC / heater <select id="ac"><option value="0">Off</option><option value="1">Low</option><option value="2" selected>Med</option><option value="3">Max</option></select></label>
+      <label>Home charging <select id="home"><option value="0.9">Yes — mostly home</option><option value="0.5">Mixed</option><option value="0.15">No — mostly fast charge</option></select></label>
+      <label>DC fast-charge share % <input id="dcfc" type="number" value="15" min="0" max="100"></label>
+      <label>Ownership <select id="yrs"><option value="5" selected>5 years</option><option value="8">8 years (battery warranty)</option></select></label>
+      <label>Pincode — optional, checks tariff slab <input id="pin" type="text" inputmode="numeric" maxlength="6" placeholder="e.g. 411001"></label>
+    </div>
+    <div id="slabNote" class="hint" aria-live="polite"></div>
+    <details><summary>Power-user: dashboard photo / OBD CSV / battery sticker (on-device OCR)</summary>
+      <div class="grid">
+        <label>Dashboard / sticker photo <input id="photo" type="file" accept="image/*"></label>
+        <label>OBD CSV export <input id="csv" type="file" accept=".csv,.txt"></label>
+      </div>
+      <div id="ocrOut" class="mono" aria-live="polite"></div>
+      <p class="hint"><strong>Honest offline note:</strong> OCR text extraction runs on-device, but the first photo needs network once to fetch OCR weights (~2 MB, cached after). Everything else — search, physics, cost math — works fully offline. Without network, type your odometer below; nothing breaks.</p>
+      <label>Odometer km (optional, improves SoH) <input id="odo" type="number" placeholder="e.g. 24000"></label>
+    </details>
+    <button id="go" class="go">ANALYZE MY EV →</button>
+    <p class="hint">Stage 1 of 3 — your inputs stay stupid-simple. Next: full sub-model analysis, then outputs.</p>
+    <p class="hint">Private analytics: we count searches/estimates locally to improve data (zero-result searches become our data backlog). No cookies, no cross-site trackers. <a href="/method/normalizer/">How the math works</a> · <a href="/method/climate-derate/">Climate derate</a> · <a href="/method/degradation/">Degradation curves</a></p>
+  </section>
+  <section class="card" id="stage2sec" hidden>
+    <h2>Page 2 · Core features &amp; functions analysis <span class="prov">ANALYSIS ONLY — your numbers, sub-model by sub-model</span></h2>
+    <p class="hint">Computed live for your pick. Each sub-model shows <b>your</b> numbers plus the research behind it and why competitors can't match it.</p>
+    <div class="btnrow"><button id="toStage3Top" class="primary">SEE MY OUTPUTS →</button></div>
+    <h3>A · Physics-Based Real Range Engine (offline — 5 sub-models)</h3>
+    <div id="rangeDeep"></div>
+    <h3>B · True TCO Assassin (4 sub-models)</h3>
+    <div id="tcoDeep"></div>
+    <h3>C · Battery Passport Lite (2 sub-models)</h3>
+    <div id="battDeep"></div>
+    <div class="btnrow">
+      <button id="backTo1">← Back to inputs</button>
+      <button id="toStage3" class="primary">SEE MY OUTPUTS →</button>
+    </div>
+  </section>
+  <section class="card hero" id="out" hidden>
+    <h2>Page 3 · Your outputs <span class="prov">RESULTS ONLY — range, cost, rivals, resale</span></h2>
+    <button id="backTo2" class="linklike">← Back to analysis</button>
+    <div class="heroNum"><span id="heroRange">—</span><small>km YOUR range <s id="labRange"></s></small></div>
+    <div id="confBand" class="hint" aria-live="polite"></div>
+    <div class="heroGrid">
+      <div><b id="save5">—</b><span>5-yr savings vs petrol</span></div>
+      <div><b id="beMonth">—</b><span>breakeven</span></div>
+      <div><b id="cpk">—</b><span>cost / km</span></div>
+      <div><b id="resale">—</b><span>yr-3 resale</span></div>
+    </div>
+    <div id="narr" class="narr"></div>
+    <canvas id="chart" width="640" height="220" aria-label="Breakeven chart" role="img" aria-describedby="chartFallback"></canvas>
+    <div id="chartFallback"></div>
+    <h3>Top 3 rivals, ranked like SERPs (not sponsored)</h3>
+    <div id="rivals"></div>
+    <h3>Battery passport — health now + resale</h3>
+    <div id="soh"></div>
+    <div id="resaleTbl"></div>
+    <h3>Owner-verified range (kills anecdotes with aggregates)</h3>
+    <div id="ownAgg" class="hint" aria-live="polite"></div>
+    <div class="grid">
+      <label>Your real range (km) <input id="ownRange" type="number" min="5" max="1200" placeholder="e.g. 118"></label>
+      <label>Conditions <select id="ownCond"><option value="mixed">Mixed</option><option value="city">City</option><option value="highway">Highway</option><option value="winter">Winter</option><option value="summer">Summer</option></select></label>
+    </div>
+    <div class="btnrow"><button id="ownSubmit">Submit my range (anonymous)</button></div>
+    <div class="btnrow">
+      <button id="pdfBtn">🖨 1-page loan PDF (print)</button>
+      <button id="waBtn">📋 Copy dealer-beating summary</button>
+    </div>
+  </section>
+  <section class="card print-only" id="loanSheet"></section>
+  <footer class="foot">Method: lab ÷ cycle-optimism → physics (aero+rolling+HVAC+regen) × climate × SoH. Tariffs Apr-2026. Subsidies auto-expire (PM E-DRIVE till 31 Jul 2026). Estimates — not financial advice. Provenance shown per model (verified vs estimated). ABRP is 4W-only — we cover your 2W/3W too. <a href="/llms.txt">llms.txt</a> · <a href="/sitemap-curated.xml">sitemap</a> · <a href="/openapi.json">API docs</a></footer>
+</main>
+<script src="i18n.js" defer></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>

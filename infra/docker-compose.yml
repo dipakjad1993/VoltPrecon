@@ -1,0 +1,21 @@
+services:
+  web:
+    build: { context: .., dockerfile: infra/Dockerfile, target: web }
+    ports: ["8080:8080"]
+    environment: { VOLTPRECON_BASE: "https://voltprecon.app" }
+  api:
+    build: { context: .., dockerfile: infra/Dockerfile, target: api }
+    ports: ["3001:3001"]
+    environment: { VOLTPRECON_BASE: "https://voltprecon.app" }
+  # Staging profile: SEO diffs + preview URLs before promoting to prod.
+  #   docker compose --profile staging up
+  web-staging:
+    profiles: ["staging"]
+    build: { context: .., dockerfile: infra/Dockerfile, target: web }
+    ports: ["8081:8080"]
+    environment: { VOLTPRECON_BASE: "https://staging.voltprecon.app" }
+  api-staging:
+    profiles: ["staging"]
+    build: { context: .., dockerfile: infra/Dockerfile, target: api }
+    ports: ["3002:3001"]
+    environment: { VOLTPRECON_BASE: "https://staging.voltprecon.app" }

@@ -1,0 +1,110 @@
+/* VoltPrecon design system — Material 3 Expressive (M3, Google's latest Material UI).
+   Hand-rolled M3 tokens in vanilla CSS: the full Material Components library is
+   React + hundreds of KB, which would kill the offline PWA + 350KB budget.
+   Type: Pixel system stack — Google Sans (on-device Pixel brand font) with Roboto
+   (M3's own default typeface, on every Android) guaranteed. Zero webfont downloads.
+   Shape: M3 Expressive large radii. Motion: short, subtle, reduced-motion aware. */
+:root, :root[data-theme="dark"]{
+  --font:"Google Sans Flex","Google Sans Text","Google Sans",Roboto,"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --mono:"Roboto Mono",ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  --bg:#0e120e; --card:#151b14; --card2:#1b211a;
+  --ink:#e0e4da; --mut:#bdc7b6; --faint:#8a938a;
+  --acc:#78dc9c; --acc-ink:#00391f; --acc-soft:#00522f; --acc-soft-ink:#8ff5b1;
+  --warn:#e6c34a; --warn-ink:#3a2f00; --danger:#ffb4a8;
+  --line:#40483d; --shadow:none;
+  --r-xl:24px; --r-lg:16px; --r-pill:999px;
+  color-scheme:dark;
+}
+:root[data-theme="light"]{
+  --bg:#f5f7f2; --card:#ffffff; --card2:#ebefe7;
+  --ink:#191c17; --mut:#43483e; --faint:#74796d;
+  --acc:#006d3b; --acc-ink:#ffffff; --acc-soft:#8ff5b1; --acc-soft-ink:#00210e;
+  --warn:#7a5900; --warn-ink:#ffffff; --danger:#ba1a1a;
+  --line:#c1c9b8; --shadow:0 1px 3px 1px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.18);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:24px;font-weight:400;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;transition:background-color .25s ease,color .25s ease}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+/* M3 small top app bar — sticky navigation */
+.top{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line);transition:background-color .25s ease}
+.topbar{display:flex;align-items:center;gap:8px;min-height:64px}
+.brand{font-size:22px;line-height:28px;font-weight:500;letter-spacing:0;flex:1}
+.tag{background:var(--acc-soft);color:var(--acc-soft-ink);font-size:11px;line-height:16px;font-weight:500;padding:2px 8px;border-radius:8px;vertical-align:middle;letter-spacing:.1px}
+.sub{color:var(--mut);font-size:14px;line-height:20px;padding-bottom:8px}
+/* M3 icon button */
+.theme-toggle{flex:none;width:40px;height:40px;border-radius:50%;border:0;background:transparent;color:var(--ink);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background-color .15s ease}
+.theme-toggle:hover{background:var(--card2)}
+.theme-toggle:active{background:var(--line)}
+/* M3 elevated card */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-xl);padding:20px;margin:16px 0;box-shadow:var(--shadow);transition:background-color .25s ease,border-color .25s ease}
+h2{font-size:22px;line-height:28px;font-weight:500;margin:0 0 12px}
+h3{font-size:16px;line-height:24px;font-weight:500;margin:16px 0 8px}
+.prov{font-size:12px;line-height:16px;color:var(--mut);font-weight:400}
+/* M3 text field + select */
+input,select{width:100%;padding:12px 16px;border-radius:var(--r-lg);border:1px solid var(--line);background:var(--card2);color:var(--ink);font-size:16px;line-height:24px;font-family:var(--font);transition:border-color .15s ease,background-color .25s ease}
+input:focus,select:focus{border-color:var(--acc);outline:2px solid var(--acc);outline-offset:-1px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{font-size:12px;line-height:16px;font-weight:500;color:var(--mut);display:block;letter-spacing:.2px}
+label b{color:var(--ink)}
+label input,label select{margin-top:4px}
+.hits{max-height:240px;overflow:auto;margin-top:8px}
+.hit{padding:12px 16px;border-bottom:1px solid var(--line);cursor:pointer;border-radius:12px;font-size:14px;line-height:20px}
+.hit:hover,.hit:focus{background:var(--card2)}
+.hit small{color:var(--mut)}
+.picked{background:var(--acc-soft);color:var(--acc-soft-ink);padding:12px 16px;border-radius:var(--r-lg);margin-top:8px;font-size:14px;line-height:20px}
+/* M3 extended FAB — primary action */
+.go{width:100%;margin-top:16px;padding:16px 24px;min-height:56px;font-size:15px;line-height:20px;font-weight:500;letter-spacing:.1px;border:0;border-radius:20px;background:var(--acc);color:var(--acc-ink);cursor:pointer;font-family:var(--font);box-shadow:var(--shadow);transition:transform .12s ease,filter .15s ease;display:flex;align-items:center;justify-content:center;gap:8px}
+.go:hover{filter:brightness(1.07)}
+.go:active{transform:scale(.99)}
+/* M3 display number */
+.heroNum{font-size:48px;line-height:52px;font-weight:500;color:var(--acc);font-variant-numeric:tabular-nums;letter-spacing:-.25px}
+.heroNum small{font-size:14px;line-height:20px;color:var(--mut);display:block;letter-spacing:.1px}
+.heroNum s{color:var(--danger)}
+.heroGrid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin:12px 0}
+.heroGrid div{background:var(--card2);border:0;border-radius:var(--r-lg);padding:12px 8px;text-align:center}
+.heroGrid b{display:block;font-size:16px;line-height:24px;font-weight:500;font-variant-numeric:tabular-nums}
+.heroGrid span{font-size:12px;line-height:16px;color:var(--mut)}
+.narr{font-size:14px;line-height:20px}
+.narr li{margin:4px 0}
+.mono{font-family:var(--mono);font-size:12px;line-height:16px;white-space:pre-wrap;color:var(--mut)}
+#chart{width:100%;height:auto;background:var(--card2);border:0;border-radius:var(--r-lg)}
+.rival{border-bottom:1px solid var(--line);padding:10px 4px;font-size:14px;line-height:20px;cursor:pointer}
+.rival b{color:var(--acc)}
+/* M3 buttons */
+.btnrow{display:flex;gap:12px;margin-top:12px}
+.btnrow button{flex:1;padding:12px 20px;min-height:48px;border-radius:var(--r-pill);border:1px solid var(--line);background:transparent;color:var(--acc);font-weight:500;font-size:14px;line-height:20px;letter-spacing:.1px;font-family:var(--font);cursor:pointer;transition:background-color .15s ease}
+.btnrow button:hover{background:var(--card2)}
+.btnrow button.primary{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
+.btnrow button.primary:hover{filter:brightness(1.07)}
+.linklike{background:none;border:0;color:var(--acc);font-size:14px;line-height:20px;font-weight:500;cursor:pointer;padding:8px 0;font-family:var(--font)}
+.hint{font-size:12px;line-height:16px;color:var(--mut)}
+.hint a,.foot a{color:var(--acc)}
+.foot{font-size:12px;line-height:16px;color:var(--mut);padding:20px 4px}
+.err{background:var(--card2);border:1px solid var(--danger);color:var(--ink);padding:12px 16px;border-radius:var(--r-lg);margin:12px 0;font-size:14px;line-height:20px}
+.toolbar{display:flex;gap:12px;margin-top:4px;padding-bottom:12px}.toolbar label{flex:1}
+/* M3 data table — dividers, no boxes */
+.spec{width:100%;border-collapse:collapse;font-size:14px;line-height:20px;margin:8px 0}
+.spec th{font-size:12px;line-height:16px;font-weight:500;letter-spacing:.2px;color:var(--mut);text-align:left;padding:8px;border-bottom:1px solid var(--line)}
+.spec td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.spec tr:last-child td{border-bottom:0}
+.spec td.num,.spec th.num{text-align:right;font-variant-numeric:tabular-nums}
+.callout{border-left:3px solid var(--acc);padding:10px 12px;background:var(--card2);border-radius:0 12px 12px 0;font-size:14px;line-height:20px;color:var(--mut);margin:12px 0}
+.callout b{color:var(--ink)}
+.subhead{font-size:14px;line-height:20px;font-weight:500;margin:16px 0 4px}
+.vs-bad{color:var(--danger);font-weight:500}.vs-good{color:var(--acc);font-weight:500}
+/* M3 segmented stepper */
+.stepper ol{list-style:none;display:flex;gap:8px;margin:16px 0 0;padding:0}
+.stepper li{flex:1;display:flex;align-items:center;gap:8px;font-size:14px;line-height:20px;font-weight:500;color:var(--faint);background:var(--card2);border:0;border-radius:var(--r-pill);padding:8px 12px;cursor:pointer}
+.stepper li:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.stepper li .n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--line);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:12px;line-height:16px}
+.stepper li[aria-current="step"]{background:var(--acc-soft);color:var(--acc-soft-ink)}
+.stepper li[aria-current="step"] .n{background:var(--acc);color:var(--acc-ink)}
+.stepper li.done{color:var(--mut)}
+.hit:focus,.hit:focus-visible,.rival:focus,.rival:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.print-only{display:none}
+@media print{.top,#step1,#step1b,.stepper,.foot,.btnrow,details,.go,#stage2sec,.linklike{display:none!important}.print-only{display:block!important;color:#000}.card{border:0;background:#fff;color:#000}body{background:#fff}}
+@media(max-width:520px){.grid{grid-template-columns:1fr 1fr}.heroGrid{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}

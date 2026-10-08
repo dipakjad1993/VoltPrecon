@@ -1,0 +1,10 @@
+{
+  "status": "operational",
+  "deployed_at": "2026-10-08",
+  "models": 920,
+  "curated": 66,
+  "tariff_snapshot": "2026-04-15",
+  "affirmed_on": "2026-10-08",
+  "api": "v1",
+  "incidents": []
+}

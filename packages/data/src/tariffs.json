@@ -1,0 +1,337 @@
+{
+  "_meta": {
+    "as_of": "2026-04-15",
+    "method": "Residential baseline + commercial DCFC benchmark. Fuel = most-sold grade. EV tariff = dominant home slab; DCFC = median 60kW+ price. Sources: MERC/MSEDCL, EIA, BNetzA, EVN, PLN, TKDN docs. Fleet override allowed in UI.",
+    "fx_2026_04": {
+      "INR": 83.5,
+      "EUR": 0.92,
+      "GBP": 0.79,
+      "JPY": 151.0,
+      "IDR": 15800,
+      "VND": 24500,
+      "THB": 36.1,
+      "BRL": 5.05
+    },
+    "affirmed_on": "2026-10-08",
+    "affirmed_by": "data-steward + refresh-tariffs.py --affirm",
+    "next_due": "2026-11-22",
+    "sla_days": 45,
+    "sources": "EIA API (US), MERC/MSEDCL PDFs (IN-MH), DERC (IN-DL), BNetzA, CRE, Ofgem, NEA, METI, PLN, EVN, EPPO, ANEEL, DEWA, SE, AER, ACM, NVE, Eskom, CRE-MX, DOE-PH, NERC-NG, EPDK, KPX. Homepage receipts in generator.py TARIFF_SOURCES; deep circular links in refresh-tariffs.py SOURCES.",
+    "realtime_policy": "Snapshots with 45-day SLA + user override. No per-second websockets \u2014 cars are not bought on tick data."
+  },
+  "countries": [
+    {
+      "code": "IN-MH",
+      "country": "India \u2014 Maharashtra",
+      "petrol_per_L": 104.77,
+      "diesel_per_L": 92.12,
+      "home_kwh": 9.5,
+      "home_kwh_USD": 0.114,
+      "slab_note": "MSEDCL 101\u2013300 units Rs 9.05 + FCA; >300 Rs 11\u201313. Tool default Rs 9.50 blended. Pincode slab override in app.",
+      "dcfc_kwh": 22.0,
+      "co2_g_per_kwh": 708,
+      "slab_table": [
+        {
+          "band": "0-100 units",
+          "inr": 4.5
+        },
+        {
+          "band": "101-300 units",
+          "inr": 9.05
+        },
+        {
+          "band": "301+ units",
+          "inr": 12.0
+        }
+      ],
+      "pincode_note": "Add pincode to sanity-check slab against bill. Tool default Rs 9.50 blended.",
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "IN-DL",
+      "country": "India \u2014 Delhi",
+      "petrol_per_L": 94.72,
+      "diesel_per_L": 87.62,
+      "home_kwh": 6.5,
+      "home_kwh_USD": 0.078,
+      "slab_note": "Subsidised to 200u; EV concessional ~Rs 5.5\u20136.5. Default 6.5.",
+      "dcfc_kwh": 18.0,
+      "co2_g_per_kwh": 708,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "US-TX",
+      "country": "USA \u2014 Texas",
+      "petrol_per_L": 0.85,
+      "petrol_note": "$3.22/gal regular Apr-2026 EIA",
+      "home_kwh": 0.13,
+      "dcfc_kwh": 0.42,
+      "home_kwh_USD": 0.13,
+      "co2_g_per_kwh": 380,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "US-MI",
+      "country": "USA \u2014 Michigan",
+      "petrol_per_L": 0.92,
+      "home_kwh": 0.19,
+      "dcfc_kwh": 0.48,
+      "home_kwh_USD": 0.19,
+      "note": "Cold derate showcase (-32% at -7C heater).",
+      "co2_g_per_kwh": 450,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "US-CA",
+      "country": "USA \u2014 California",
+      "petrol_per_L": 1.28,
+      "home_kwh": 0.34,
+      "dcfc_kwh": 0.55,
+      "home_kwh_USD": 0.34,
+      "note": "TOU 4\u20139pm $0.55; EV off-peak $0.25. Default blended $0.34.",
+      "co2_g_per_kwh": 210,
+      "home_offpeak": 0.25,
+      "home_peak": 0.55,
+      "tou_note": "TOU 4-9pm $0.55; EV off-peak $0.25. Default blended $0.34. Override in app.",
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "DE",
+      "country": "Germany",
+      "petrol_per_L": 1.85,
+      "diesel_per_L": 1.68,
+      "home_kwh": 0.41,
+      "dcfc_kwh": 0.59,
+      "home_kwh_USD": 0.41,
+      "note": "BNetzA 2026 avg. Most expensive \u2014 TCO sensitive to home charging.",
+      "co2_g_per_kwh": 350,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "FR",
+      "country": "France",
+      "petrol_per_L": 1.82,
+      "home_kwh": 0.25,
+      "dcfc_kwh": 0.45,
+      "home_kwh_USD": 0.25,
+      "note": "Nuclear = cheap + clean (60g). Bonus \u00e9cologique means-tested.",
+      "co2_g_per_kwh": 60,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "GB",
+      "country": "United Kingdom",
+      "petrol_per_L": 1.52,
+      "petrol_note": "\u00a31.46/L; BEV still ~$13k more than ICE avg (IEA 2026)",
+      "home_kwh": 0.32,
+      "dcfc_kwh": 0.62,
+      "home_kwh_USD": 0.32,
+      "co2_g_per_kwh": 220,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "CN",
+      "country": "China",
+      "petrol_per_L": 1.08,
+      "home_kwh": 0.08,
+      "dcfc_kwh": 0.16,
+      "home_kwh_USD": 0.08,
+      "note": "BEVs CHEAPER than ICE (only market). Night tariff \u00a50.3.",
+      "co2_g_per_kwh": 550,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "JP",
+      "country": "Japan",
+      "petrol_per_L": 1.15,
+      "home_kwh": 0.24,
+      "dcfc_kwh": 0.38,
+      "home_kwh_USD": 0.24,
+      "co2_g_per_kwh": 470,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "ID",
+      "country": "Indonesia",
+      "petrol_per_L": 0.63,
+      "petrol_note": "Pertalite Rp10,000/L",
+      "home_kwh": 0.09,
+      "dcfc_kwh": 0.16,
+      "home_kwh_USD": 0.09,
+      "note": "TKDN 40%+ subsidy gate. Fleet e-moped capital.",
+      "co2_g_per_kwh": 680,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "VN",
+      "country": "Vietnam",
+      "petrol_per_L": 0.95,
+      "home_kwh": 0.08,
+      "dcfc_kwh": 0.12,
+      "home_kwh_USD": 0.08,
+      "note": "EVN stepped; VinFast free-charging promos excluded from baseline.",
+      "co2_g_per_kwh": 480,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "TH",
+      "country": "Thailand",
+      "petrol_per_L": 1.05,
+      "home_kwh": 0.12,
+      "dcfc_kwh": 0.2,
+      "home_kwh_USD": 0.12,
+      "co2_g_per_kwh": 460,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "BR",
+      "country": "Brazil",
+      "petrol_per_L": 1.12,
+      "home_kwh": 0.16,
+      "dcfc_kwh": 0.3,
+      "home_kwh_USD": 0.16,
+      "note": "Ethanol flex distorts TCO \u2014 app shows flex-fuel comparator.",
+      "co2_g_per_kwh": 150,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "AE",
+      "country": "UAE",
+      "petrol_per_L": 0.82,
+      "home_kwh": 0.09,
+      "dcfc_kwh": 0.18,
+      "home_kwh_USD": 0.09,
+      "note": "Cheap fuel + cheap power = TCO decided by insurance/heat derate.",
+      "co2_g_per_kwh": 420,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "SA",
+      "country": "Saudi Arabia",
+      "petrol_per_L": 0.62,
+      "home_kwh": 0.05,
+      "dcfc_kwh": 0.13,
+      "home_kwh_USD": 0.05,
+      "co2_g_per_kwh": 620,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "AU",
+      "country": "Australia",
+      "petrol_per_L": 1.25,
+      "home_kwh": 0.28,
+      "dcfc_kwh": 0.5,
+      "home_kwh_USD": 0.28,
+      "co2_g_per_kwh": 580,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "NL",
+      "country": "Netherlands",
+      "petrol_per_L": 1.95,
+      "home_kwh": 0.33,
+      "dcfc_kwh": 0.49,
+      "home_kwh_USD": 0.33,
+      "co2_g_per_kwh": 320,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "NO",
+      "country": "Norway",
+      "petrol_per_L": 2.05,
+      "home_kwh": 0.14,
+      "dcfc_kwh": 0.35,
+      "home_kwh_USD": 0.14,
+      "note": "80%+ BEV share. Cold derate + cheap hydro power.",
+      "co2_g_per_kwh": 30,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "ZA",
+      "country": "South Africa",
+      "petrol_per_L": 1.18,
+      "home_kwh": 0.15,
+      "dcfc_kwh": 0.28,
+      "home_kwh_USD": 0.15,
+      "note": "Load-shedding risk flag in app.",
+      "co2_g_per_kwh": 720,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "MX",
+      "country": "Mexico",
+      "petrol_per_L": 1.05,
+      "home_kwh": 0.1,
+      "dcfc_kwh": 0.25,
+      "home_kwh_USD": 0.1,
+      "co2_g_per_kwh": 440,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "PH",
+      "country": "Philippines",
+      "petrol_per_L": 1.1,
+      "home_kwh": 0.22,
+      "dcfc_kwh": 0.35,
+      "home_kwh_USD": 0.22,
+      "co2_g_per_kwh": 590,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "NG",
+      "country": "Nigeria",
+      "petrol_per_L": 0.45,
+      "petrol_note": "Subsidy removal volatile; app allows override",
+      "home_kwh": 0.12,
+      "dcfc_kwh": 0.25,
+      "home_kwh_USD": 0.12,
+      "co2_g_per_kwh": 450,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "TR",
+      "country": "T\u00fcrkiye",
+      "petrol_per_L": 1.02,
+      "home_kwh": 0.11,
+      "dcfc_kwh": 0.22,
+      "home_kwh_USD": 0.11,
+      "co2_g_per_kwh": 430,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    },
+    {
+      "code": "KR",
+      "country": "South Korea",
+      "petrol_per_L": 1.22,
+      "home_kwh": 0.13,
+      "dcfc_kwh": 0.28,
+      "home_kwh_USD": 0.13,
+      "co2_g_per_kwh": 410,
+      "fuel_source": "EIA weekly / Indian Oil daily / regulator benchmark Apr-2026",
+      "next_due": "2026-11-22"
+    }
+  ]
+}

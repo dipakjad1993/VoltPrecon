@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Staged rollout: curated pages are indexable now; estimated pages carry
+# per-page noindex until owner-verified data enriches them. Submit sitemap-curated.xml as primary in Search Console.
+Sitemap: https://voltprecon.app/sitemap.xml
+Sitemap: https://voltprecon.app/sitemap-curated.xml
+Sitemap: https://voltprecon.app/sitemap-estimated.xml

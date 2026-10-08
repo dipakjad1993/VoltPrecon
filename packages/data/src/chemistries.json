@@ -1,0 +1,183 @@
+{
+  "_meta": {
+    "source": "VoltPrecon Chemistry Lab \u2014 compiled Apr-2026",
+    "references": [
+      "WoodMac Energy Storage Apr-2026 ($85/kWh LFP pack)",
+      "CATL 2025 annual (40.2% global share)",
+      "BYD Blade 2.0 / Naxtra sodium-ion datasheets",
+      "AVILOO 500k battery tests (13.5% health variance)",
+      "IEA Global EV Outlook 2026"
+    ],
+    "note": "Degradation = calendar + cycle. Cycle life = full-equivalent cycles to 80% SoH at 25C, 0.5C/0.5C, 100% DoD unless noted. Derate multipliers applied in engine. SSB_PROTO is flagged prototype-only with resale=null per IEA Global EV Outlook 2026."
+  },
+  "chemistries": [
+    {
+      "id": "LFP",
+      "name": "Lithium Iron Phosphate",
+      "example_cells": [
+        "CATL LFP Blade-like",
+        "BYD Blade 1.0/2.0",
+        "Tata Nexon EV 45 (LFP)"
+      ],
+      "nominal_voltage_V": 3.2,
+      "gravimetric_Wh_per_kg_pack": 135,
+      "cycle_life_to_80pct": 3500,
+      "calendar_loss_pct_per_year": 1.2,
+      "coulombic_notes": "Flat OCV \u2014 SoC hard to estimate from voltage; needs coulomb counting. Excellent heat tolerance.",
+      "pack_cost_2026_USD_per_kWh": 85,
+      "fast_charge_tolerance": "High \u2014 1.5C\u20132C sustained, 3C peak (Shenxing Pro). Best for delivery / hot climates / daily DCFC.",
+      "cold_sensitivity": "High below 5C (lithium plating risk, +25% internal resistance at 0C). Needs heat pump + preheat.",
+      "heat_sensitivity": "Low \u2014 stable to 55C. Preferred Delhi/Jakarta/Riyadh.",
+      "degradation_curve": {
+        "y1": 0.97,
+        "y3": 0.93,
+        "y5": 0.89,
+        "y8": 0.82
+      },
+      "resale_modifier": 1.06,
+      "verdict_plain_english": "Buy LFP if you ride daily, fast-charge often, or live where it is HOT. Slightly heavier, slightly less range, but lasts years longer and is cheaper to replace."
+    },
+    {
+      "id": "NMC811",
+      "name": "Nickel Manganese Cobalt 8-1-1",
+      "example_cells": [
+        "LG E78 / Tesla Model Y LR (LG)",
+        "Hyundai E-GMP NMC",
+        "Ather 450X Gen3"
+      ],
+      "nominal_voltage_V": 3.7,
+      "gravimetric_Wh_per_kg_pack": 185,
+      "cycle_life_to_80pct": 1500,
+      "calendar_loss_pct_per_year": 2.2,
+      "pack_cost_2026_USD_per_kWh": 112,
+      "fast_charge_tolerance": "Medium \u2014 1C\u20131.5C sustained. Frequent 2C+ DCFC accelerates cracking. Keep 20\u201380% for daily.",
+      "cold_sensitivity": "Medium \u2014 better than LFP in winter (~-22% at -7C vs -32% LFP without preheat).",
+      "heat_sensitivity": "High \u2014 keep under 40C; needs liquid cooling (Tesla octovalve / Hyundai).",
+      "degradation_curve": {
+        "y1": 0.95,
+        "y3": 0.89,
+        "y5": 0.83,
+        "y8": 0.73
+      },
+      "resale_modifier": 0.97,
+      "verdict_plain_english": "Buy NMC if you need MAX range in a light pack and live where it is COLD or you do highway miles. Baby it: home-charge to 80%, DCFC only on trips."
+    },
+    {
+      "id": "NMC622",
+      "name": "Nickel Manganese Cobalt 6-2-2",
+      "example_cells": [
+        "Older Nexon EV Max",
+        "MG ZS EV 2022\u201324"
+      ],
+      "gravimetric_Wh_per_kg_pack": 165,
+      "cycle_life_to_80pct": 1800,
+      "calendar_loss_pct_per_year": 1.9,
+      "pack_cost_2026_USD_per_kWh": 104,
+      "fast_charge_tolerance": "Medium",
+      "cold_sensitivity": "Medium",
+      "heat_sensitivity": "Medium-High",
+      "degradation_curve": {
+        "y1": 0.955,
+        "y3": 0.9,
+        "y5": 0.85,
+        "y8": 0.76
+      },
+      "resale_modifier": 0.98,
+      "verdict_plain_english": "Balanced older NMC. Fine used if SoH >88% and price reflects ~8-yr life."
+    },
+    {
+      "id": "LMFP",
+      "name": "Lithium Manganese Iron Phosphate",
+      "example_cells": [
+        "CATL M3P / BYD LMFP pilot 2025\u201326",
+        "2026 Ola S1 Pro Gen3 (claimed)"
+      ],
+      "gravimetric_Wh_per_kg_pack": 165,
+      "cycle_life_to_80pct": 2800,
+      "calendar_loss_pct_per_year": 1.4,
+      "pack_cost_2026_USD_per_kWh": 92,
+      "fast_charge_tolerance": "High \u2014 ~LFP with +15% voltage = +15% range.",
+      "cold_sensitivity": "Medium-High",
+      "heat_sensitivity": "Low",
+      "degradation_curve": {
+        "y1": 0.968,
+        "y3": 0.925,
+        "y5": 0.885,
+        "y8": 0.81
+      },
+      "resale_modifier": 1.04,
+      "verdict_plain_english": "2026 sweet spot: LFP durability + near-NMC range. Ask dealer for written chemistry proof \u2014 many claim LMFP, ship LFP."
+    },
+    {
+      "id": "NA_ION",
+      "name": "Sodium-ion (Naxtra / CATL Gen2)",
+      "example_cells": [
+        "CATL Naxtra 175Wh/kg (announced Apr-2026)",
+        "BYD Seagull Na-ion pilot",
+        "Yadea sodium e-moped"
+      ],
+      "gravimetric_Wh_per_kg_pack": 140,
+      "cycle_life_to_80pct": 3000,
+      "calendar_loss_pct_per_year": 1.0,
+      "pack_cost_2026_USD_per_kWh": 68,
+      "fast_charge_tolerance": "Very high \u2014 3C\u20134C, -30C operable.",
+      "cold_sensitivity": "Very low \u2014 best winter budget chemistry.",
+      "heat_sensitivity": "Very low",
+      "degradation_curve": {
+        "y1": 0.972,
+        "y3": 0.935,
+        "y5": 0.9,
+        "y8": 0.84
+      },
+      "resale_modifier": 0.94,
+      "verdict_plain_english": "Cheapest + toughest. Slightly less range. Perfect for fleets, mopeds, 3W. Resale still discounted (buyer unfamiliarity) \u2014 negotiate hard."
+    },
+    {
+      "id": "LTO",
+      "name": "Lithium Titanate",
+      "example_cells": [
+        "Toshiba SCiB (e-bus / 3W fast-charge)"
+      ],
+      "gravimetric_Wh_per_kg_pack": 85,
+      "cycle_life_to_80pct": 15000,
+      "calendar_loss_pct_per_year": 0.8,
+      "pack_cost_2026_USD_per_kWh": 210,
+      "fast_charge_tolerance": "Extreme \u2014 6C, 10-min full.",
+      "cold_sensitivity": "Very low",
+      "heat_sensitivity": "Very low",
+      "degradation_curve": {
+        "y1": 0.985,
+        "y3": 0.965,
+        "y5": 0.945,
+        "y8": 0.91
+      },
+      "resale_modifier": 1.0,
+      "verdict_plain_english": "Bus/3W only. Outlives the chassis. Too heavy/expensive for cars/scooters."
+    },
+    {
+      "id": "SSB_PROTO",
+      "name": "Solid-state prototype (not modelled)",
+      "example_cells": [
+        "Toyota SSB prototype 2021 / 2028 plan",
+        "BYD all-SSB 2027 sale / 2030 mass",
+        "Samsung SSB timeline"
+      ],
+      "nominal_voltage_V": 3.8,
+      "gravimetric_Wh_per_kg_pack": 300,
+      "cycle_life_to_80pct": 1000,
+      "calendar_loss_pct_per_year": 2.0,
+      "pack_cost_2026_USD_per_kWh": 180,
+      "fast_charge_tolerance": "Lab claims <10min; unproven at pack scale",
+      "cold_sensitivity": "Unknown at scale",
+      "heat_sensitivity": "Claimed low; unproven",
+      "degradation_curve": {
+        "y1": 0.97,
+        "y3": 0.93,
+        "y5": 0.89,
+        "y8": 0.82
+      },
+      "resale_modifier": 1.0,
+      "verdict_plain_english": "PROTOTYPE ONLY per IEA 2026: premium segments until early-2030s. Engine returns resale=null + pages carry noindex. Never invent a curve."
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "voltprecon",
+  "version": "1.1.0",
+  "private": true,
+  "description": "VoltPrecon — Universal EV Truth Engine. Enterprise-ready, offline-first, physics-based real range + True TCO + resale for 900+ 2W/3W/4W models.",
+  "type": "module",
+  "workspaces": ["packages/*", "apps/*", "tools/*"],
+  "scripts": {
+    "data:build": "python packages/data/src/generator.py",
+    "data:check": "python tools/data/check.py",
+    "data:refresh": "python tools/data/refresh-tariffs.py --show",
+    "data:affirm": "python tools/data/refresh-tariffs.py --affirm",
+    "data:watch": "python tools/data/subsidy-watch.py",
+    "data:rollup": "python tools/data/rollup-owners.py --demo",
+    "engine:test": "node --test packages/engine/tests/engine.test.js",
+    "engine:fuzz": "node --test packages/engine/tests/fuzz.test.js",    "engine:all": "node --test packages/engine/tests/engine.test.js packages/engine/tests/fuzz.test.js",
+    "app:smoke": "node tools/qa/app-smoke.mjs",
+    "qa:sec-headers": "node tools/qa/security-headers.mjs",
+    "perf:budget": "node tools/perf/budget.js",
+    "seo:build": "node tools/seo/generate.js && node tools/seo/method.js",
+    "seo:ping": "node tools/seo/ping.js",
+    "ops:rollup": "python tools/ops/log-rollup.py",
+    "api:start": "node packages/api/src/server.js",
+    "web:serve": "node infra/serve-static.js 8080",
+    "verify": "python packages/data/src/generator.py && python tools/data/check.py && python tools/data/subsidy-watch.py && node --test packages/engine/tests/engine.test.js packages/engine/tests/fuzz.test.js && node tools/qa/app-smoke.mjs && node tools/qa/security-headers.mjs && node tools/seo/generate.js && node tools/seo/method.js && node tools/perf/budget.js"
+  },
+  "engines": { "node": ">=18" }
+}

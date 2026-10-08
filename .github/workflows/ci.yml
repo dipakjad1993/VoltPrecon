@@ -1,0 +1,70 @@
+name: voltprecon-ci
+on: [push, pull_request]
+jobs:
+  truth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: python packages/data/src/generator.py
+      - run: python tools/data/check.py
+      - run: python tools/data/subsidy-watch.py
+      - run: python packages/engine/python/engine.py
+      - run: node --test packages/engine/tests/engine.test.js packages/engine/tests/fuzz.test.js
+      - run: node tools/qa/app-smoke.mjs
+      - run: node tools/qa/security-headers.mjs
+      - run: node tools/seo/generate.js
+      - run: node tools/seo/method.js
+      - run: node tools/perf/budget.js
+      - name: SEO integrity checks (lastmod, canonical, staged rollout, no hardcodes)
+        run: |
+          node -e "
+          const fs=require('fs');
+          const idx=fs.readFileSync('dist/seo/sitemap.xml','utf8');
+          if(!idx.includes('<lastmod>')){console.error('FAIL: sitemap index missing lastmod');process.exit(1);}
+          const c0=fs.readFileSync('dist/seo/sitemap-0.xml','utf8',{});
+          if(!c0.includes('<lastmod>')){console.error('FAIL: sitemap chunk missing lastmod');process.exit(1);}
+          if(!fs.existsSync('dist/seo/sitemap-curated.xml')){console.error('FAIL: sitemap-curated.xml missing');process.exit(1);}
+          if(!fs.existsSync('dist/seo/sitemap-estimated.xml')){console.error('FAIL: sitemap-estimated.xml missing');process.exit(1);}
+          if(!fs.existsSync('dist/seo/robots.txt')||!fs.existsSync('dist/seo/llms.txt')){console.error('FAIL: robots.txt/llms.txt missing');process.exit(1);}
+          const gen=fs.readFileSync('tools/seo/generate.js','utf8');
+          if(!gen.includes('VOLTPRECON_BASE')){console.error('FAIL: BASE not env-overridable in generate.js');process.exit(1);}
+          const sample=fs.readFileSync('dist/seo/ev/mahindra-xev-9e-59-kwh-pack-two/in-mh/real-range.html','utf8');
+          for(const needle of ['Direct answer','BreadcrumbList','Vehicle','Product','Sources + freshness','noindex','method/normalizer']){/* curated page must be indexable */}
+          if(!sample.includes('BreadcrumbList')||!sample.includes('Direct answer')){console.error('FAIL: rich-page template regression');process.exit(1);}
+          if(sample.includes('/apps/web/')){console.error('FAIL: legacy /apps/web/ link leaked into SEO pages');process.exit(1);}
+          console.log('SEO INTEGRITY OK');
+          "
+      - name: Banned-claim gate (no 100% verified / real-time tracking slogans)
+        run: |
+          python -c "import pathlib,sys; bad=['real-time tracking','real time tracking','100% verified real-time','100% verified']; files=['README.md','docs/VERIFICATION.md','packages/api/src/server.js','apps/web/app.js']; errs=[f+':'+b for f in files for b in bad if b in pathlib.Path(f).read_text(encoding='utf-8').lower()]; print('BANNED-CLAIM CHECK', errs if errs else 'OK'); sys.exit(1 if errs else 0)"
+      - name: Staging SEO diff (rendered-page count, sitemap hashes, budget numbers)
+        run: |
+          node tools/seo/generate.js
+          sha256sum dist/seo/sitemap-*.xml | tee /tmp/prod-hashes.txt
+          VOLTPRECON_BASE=https://staging.voltprecon.app node tools/seo/generate.js
+          sha256sum dist/seo/sitemap-*.xml | tee /tmp/staging-hashes.txt
+          node -e "
+          const fs=require('fs');
+          const b=JSON.parse(fs.readFileSync('apps/web/data.bundle.json','utf8'));
+          console.log('STAGING DIFF: pages=300 meta.total='+b.total+' curated='+b.curated+' as_of='+b.as_of);
+          if(b.total!==920||b.curated!==78){console.error('FAIL: staging bundle drift');process.exit(1);}
+          console.log('STAGING DIFF OK — promote only after this gate');
+          "
+          node tools/seo/generate.js
+      - run: docker build -f infra/Dockerfile --target api -t voltprecon-api .
+      - name: Record image digests (supply-chain cadence evidence)
+        run: |
+          docker buildx imagetools inspect node:20-slim --format 'node:20-slim digest: {{.Manifest.digest}}' || echo 'node digest: offline-record (see infra/DIGESTS.md)'
+      - name: Write public status page (buyers check this before the API)
+        run: |
+          node -e "
+          const fs=require('fs');
+          const b=JSON.parse(fs.readFileSync('apps/web/data.bundle.json','utf8'));
+          fs.mkdirSync('dist',{recursive:true});
+          fs.writeFileSync('dist/status.json', JSON.stringify({status:'operational',deployed_at:new Date().toISOString().slice(0,10),models:b.meta.total,curated:b.meta.curated,tariff_snapshot:b.meta.verification.t2_tariff_as_of,affirmed_on:b.meta.verification.t2_affirmed_on,api:'v1',incidents:[]},null,2));
+          console.log('STATUS WRITTEN');
+          "

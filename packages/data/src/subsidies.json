@@ -1,0 +1,91 @@
+{
+  "_meta": {
+    "as_of": "2026-04-15",
+    "warning": "Subsidies expire. Engine shows countdown + post-expiry TCO. Always verify with gazette/dealer.",
+    "affirmed_on": "2026-10-08",
+    "next_due": "2026-11-08",
+    "expiry_rule": "PM E-DRIVE valid till 2026-07-31 23:59 IST; engine applies Rs 0 from 2026-08-01. No silent post-expiry application."
+  },
+  "schemes": [
+    {
+      "country": "IN",
+      "name": "PM E-DRIVE",
+      "valid_till": "2026-07-31",
+      "benefit": "Rs 5,000/kWh capped: 2W Rs 10,000 | 3W Rs 25,000\u201350,000 | e-bus/truck per tender",
+      "eligibility": "Ex-factory price caps + AIS-156 Ph2 + DVA localisation; 1 per Aadhaar",
+      "engine_logic": "min(5000*battery_kwh, cap_by_segment); hard-expire 2026-07-31 23:59 IST, Rs 0 from 2026-08-01; show post-subsidy TCO [gazette-watch: expired]",
+      "expired": true
+    },
+    {
+      "country": "IN",
+      "name": "GST 5% EV vs 28\u201350% ICE",
+      "valid_till": "ongoing",
+      "benefit": "Effective ~19\u201330% price advantage baked into ex-showroom",
+      "engine_logic": "No extra math \u2014 curated prices already GST-5 inclusive; ICE comparator uses GST-28+cess"
+    },
+    {
+      "country": "IN",
+      "name": "State top-ups (MH/DL/GJ/TN)",
+      "valid_till": "2026-12-31",
+      "benefit": "MH: early-bird e-2W up to Rs 10k (fund-limited); DL: road-tax waiver + Rs 5k/kWh legacy queue",
+      "engine_logic": "Conservative default OFF; toggle in UI with fund-exhaustion warning"
+    },
+    {
+      "country": "US",
+      "name": "IRA 30D Clean Vehicle Credit",
+      "valid_till": "2032 (income + sourcing gates)",
+      "benefit": "$7,500 new ($3,750 if battery-only gate) | $4,000 used",
+      "engine_logic": "VIN-gated: NA assembly + $55k car/$80k SUV cap + income caps + 2026 FEOC graphite rules; app asks 4 yes/no and applies 7500/3750/0"
+    },
+    {
+      "country": "FR",
+      "name": "Bonus \u00e9cologique + CEE",
+      "benefit": "Up to \u20ac4,000 means-tested + low eco-score (China-built penalised)",
+      "engine_logic": "Apply only if eco-score pass + income gate; else \u20ac0 with explainer"
+    },
+    {
+      "country": "DE",
+      "name": "Umweltbonus successor / Dienstwagen 0.25% rule",
+      "benefit": "No direct Kaufpr\u00e4mie 2026; BIK 0.25% for <\u20ac70k BEV vs 1% ICE = stealth \u20ac200\u2013400/mo",
+      "engine_logic": "TCO adds BIK saving for company-car toggle"
+    },
+    {
+      "country": "ID",
+      "name": "TKDN + PPnBM DTP",
+      "benefit": "0% PPnBM + VAT borne by govt if TKDN \u226540%; import-duty relief for CKD",
+      "engine_logic": "Apply only to TKDN-flagged variants (Wuling Air, VinFast VF e34 CKD); else show gap"
+    },
+    {
+      "country": "TH",
+      "name": "EV3.5 (2024\u201327)",
+      "benefit": "THB 50k\u2013100k + excise 2% if localised 1:2",
+      "engine_logic": "Apply by localisation flag"
+    },
+    {
+      "country": "BR",
+      "name": "Rota 2030 / MOVER",
+      "benefit": "IPI cut + import-duty quota for BEV",
+      "engine_logic": "Conservative blended 6% price cut; flag uncertainty"
+    },
+    {
+      "country": "GB",
+      "name": "ZEV mandate + Plug-in van grant",
+      "benefit": "No car grant; van/wheelchair grant \u00a32.5k\u20135k; salary-sacrifice 2% BIK",
+      "engine_logic": "BIK saving for salary-sacrifice toggle"
+    },
+    {
+      "country": "IN",
+      "name": "IN FAME-III (watch-only)",
+      "valid_till": "proposal",
+      "benefit": "Draft stage Oct-2026 \u2014 not applied",
+      "engine_logic": "WATCH ONLY: subsidy-watch.py tracks e-Gazette; engine applies Rs 0 until gazetted"
+    },
+    {
+      "country": "EU",
+      "name": "EU CO2 2026 tightening (watch-only)",
+      "valid_till": "ongoing",
+      "benefit": "2025-26 CO2 targets driving affordable EV launches + price cuts",
+      "engine_logic": "No direct TCO math; informs curated price refresh cadence"
+    }
+  ]
+}

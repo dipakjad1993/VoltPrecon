@@ -1,0 +1,93 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "VoltPrecon Truth Engine API",
+    "version": "1.1.0",
+    "description": "Physics-based real EV range + true TCO + SoH/resale for 920 2W/3W/4W models across 25 countries. Public, no key. CORS-open documented decision for embed partners (lender/insurance/dealer). Rate limited: 60 req/min/IP (429 + Retry-After + X-RateLimit-*). Errors are envelopes {error:{code,message,requestId}}. Version policy: v1 at /api/v1/*; v2 will ship alongside with 6-month Sunset window (see docs/API.md). Contact: api@voltprecon.app",
+    "contact": { "name": "VoltPrecon", "url": "https://voltprecon.app" }
+  },
+  "servers": [{ "url": "https://voltprecon.app", "description": "Production" }],
+  "paths": {
+    "/api/v1/health": {
+      "get": { "summary": "Health + build provenance", "responses": { "200": { "description": "ok" } } }
+    },
+    "/api/v1/models": {
+      "get": {
+        "summary": "Search model index",
+        "parameters": [
+          { "name": "q", "in": "query", "schema": { "type": "string" } },
+          { "name": "segment", "in": "query", "schema": { "type": "string", "enum": ["2W-scooter", "2W-moto", "3W-auto", "4W-SUV", "4W-sedan"] } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20 } }
+        ],
+        "responses": { "200": { "description": "model rows with provenance (curated vs estimated)" } }
+      }
+    },
+    "/api/v1/estimate": {
+      "post": {
+        "summary": "Physics + TCO + SoH for one model",
+        "parameters": [
+          { "name": "x-request-id", "in": "header", "schema": { "type": "string" }, "description": "Echoed back; incident correlation" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["modelId"],
+                "properties": {
+                  "modelId": { "type": "string" },
+                  "icePrice": { "type": "number" },
+                  "use": {
+                    "type": "object",
+                    "properties": {
+                      "tariff": { "type": "string", "example": "IN-MH" },
+                      "riderKg": { "type": "number" }, "pillionKg": { "type": "number" }, "cargoKg": { "type": "number" },
+                      "speedKph": { "type": "number" }, "cityFrac": { "type": "number" }, "tempC": { "type": "number" },
+                      "acLevel": { "type": "integer" }, "kmPerDay": { "type": "number" }, "years": { "type": "integer" },
+                      "homeFrac": { "type": "number" }, "dcfcFrac": { "type": "number" }, "ageYears": { "type": "number" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "realRangeKm, honestLabKm, tco, soh, resaleYr3, subsidyStatus" },
+          "404": { "description": "{error:{code:UNKNOWN_MODEL,message,requestId}}" },
+          "429": { "description": "{error:{code:RATE_LIMITED,...}} + Retry-After header" }
+        }
+      }
+    },
+    "/api/v1/compare": {
+      "post": {
+        "summary": "Ranked rivals (max 4)",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object", "properties": { "ids": { "type": "array", "items": { "type": "string" } }, "use": { "type": "object" } } } } }
+        },
+        "responses": { "200": { "description": "ranked estimates by TCO savings" } }
+      }
+    },
+    "/api/v1/owner-range": {
+      "post": {
+        "summary": "Submit anonymous owner-verified range (aggregated per model)",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object", "required": ["modelId", "km"], "properties": { "modelId": { "type": "string" }, "km": { "type": "number" }, "cond": { "type": "string" } } } } }
+        },
+        "responses": { "200": { "description": "aggregate {n, avgKm}" } }
+      }
+    },
+    "/api/v1/events": {
+      "post": {
+        "summary": "Anonymous product telemetry (zero-result searches, estimate completions). No PII accepted.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object" } } } },
+        "responses": { "200": { "description": "ack" } }
+      }
+    },
+    "/openapi.json": { "get": { "summary": "This spec", "responses": { "200": { "description": "openapi" } } } },
+    "/sitemap.xml": { "get": { "summary": "Sitemap index", "responses": { "200": { "description": "xml" } } } }
+  }
+}
