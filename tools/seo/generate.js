@@ -26,7 +26,7 @@ const LASTMOD = (B.meta && B.meta.as_of) || '2026-04-15';
 
 // rank models by (curated first, then battery size) for pre-render priority
 const ranked = [...B.models_index].sort((a, b) => (a.p === 'curated' ? 0 : 1) - (b.p === 'curated' ? 0 : 1) || b.kwh - a.kwh);
-const TOP_MODELS = ranked.filter((x) => x.p === 'curated').slice(0, 30); // 30 curated x 5 geos x 3 intents = 450 static pages (curated-first, staged)
+const TOP_MODELS = ranked.filter((x) => x.p === 'curated').slice(0, 30); // 30 curated x 6 geos x 3 intents = 540 static pages (curated-first, staged)
 const TOP_GEO = ['IN-MH', 'IN-DL', 'US-TX', 'US-CA', 'DE', 'ID'];
 const urls = [];
 const curatedUrls = [];
@@ -124,6 +124,6 @@ fs.writeFileSync(path.join(OUT, 'ping-sitemaps.txt'),
   + `GET https://www.google.com/ping?sitemap=${encodeURIComponent(BASE + '/sitemap-curated.xml')}\n`
   + `GET https://www.bing.com/ping?sitemap=${encodeURIComponent(BASE + '/sitemap.xml')}\n`);
 
-console.log(`SEO: ${written} static pages (curated-first 450) + sitemap-estimated ${estimatedUrls.length} (${curatedPages} curated indexable, ${estimatedPages} estimated noindex-staged) + sitemap index (${urls.length} URLs in ${parts.length} chunks, curated ${curatedUrls.length}) lastmod=${LASTMOD}`);
+console.log(`SEO: ${written} static pages (curated-first ${written}) + sitemap-estimated ${estimatedUrls.length} (${curatedPages} curated indexable, ${estimatedPages} estimated noindex-staged) + sitemap index (${urls.length} URLs in ${parts.length} chunks, curated ${curatedUrls.length}) lastmod=${LASTMOD}`);
 console.log(`BASE=${BASE} (override with VOLTPRECON_BASE env; no hardcoded staging URLs)`);
 console.log('PING after deploy: cat dist/seo/ping-sitemaps.txt (Google + Bing)');

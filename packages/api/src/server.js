@@ -26,6 +26,29 @@ const full = (m) => { const c = CUR.get(m.id); return { id: m.id, year: m.y, mak
 // ---- in-memory stores (swap for Redis/SQLite in multi-instance deploys) ----
 const OWN = new Map(); // modelId -> {n,sum}
 const EVENTS = []; // last 500 anonymous events (ops visibility, no PII)
+// RUM ring: privacy-friendly field web-vitals (lcp_ms, inp_ms, cls) — no URL, no IP stored here.
+const RUM = []; // last 200 {lcpMs,inpMs,cls,t}
+function rumRecord(e) {
+  if (!e || typeof e !== 'object') return false;
+  const lcp = Number(e.lcpMs ?? e.lcp), inp = Number(e.inpMs ?? e.inp), cls = Number(e.cls);
+  if (!(lcp >= 0 && lcp < 60000) && !(inp >= 0 && inp < 10000) && !(cls >= 0 && cls < 5)) return false;
+  RUM.push({ lcpMs: isFinite(lcp) ? Math.round(lcp) : null, inpMs: isFinite(inp) ? Math.round(inp) : null, cls: isFinite(cls) ? Math.round(cls * 1000) / 1000 : null, t: Date.now() });
+  if (RUM.length > 200) RUM.shift();
+  return true;
+}
+function rumSummary() {
+  if (!RUM.length) return { n: 0, note: 'no field data yet — PWA beacons web-vitals on estimate completion' };
+  const q = (vals, p) => { if (!vals.length) return null; const s = [...vals].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(s.length * p))]; };
+  const l = RUM.map((r) => r.lcpMs).filter((v) => v != null), i = RUM.map((r) => r.inpMs).filter((v) => v != null), c = RUM.map((r) => r.cls).filter((v) => v != null);
+  return { n: RUM.length, lcpP75Ms: q(l, 0.75), inpP75Ms: q(i, 0.75), clsP75: q(c, 0.75), targets: { lcpMs: 2500, inpMs: 200, cls: 0.1 } };
+}
+// Explicit FX: TCO math runs in INR units; non-IN tariffs convert via the
+// stamped bundle rate (tariffs.json _meta.fx_2026_04, as_of 2026-04-15).
+// The rate + as-of date ride every estimate response — never silent.
+function fxInfo() {
+  const fx = (BUNDLE.meta.verification && BUNDLE.meta.verification.fx) || {};
+  return { inrPerUsd: fx.INR || 83.5, asOf: '2026-04-15', table: fx };
+}
 
 // ---- rate limiter: 60 req/min/IP token bucket (headers on every response) ----
 const RL = new Map();
@@ -88,15 +111,18 @@ function estimate(p) {
   const f = full(m), u = p.use || {};
   const seg = f.segment.startsWith('2W') ? '2W' : f.segment.startsWith('3W') ? '3W' : '4W';
   const t = BUNDLE.tariffs.find((x) => x.code === (u.tariff || 'IN-MH')) || BUNDLE.tariffs[0];
+  const fx = fxInfo();
+  const toInr = (usdN) => usdN * fx.inrPerUsd;
   const rr = realRange({ batteryKwh: f.battery_kwh, labRangeKm: f.lab_range_km, cycle: f.cycle, chemistry: f.chemistry, vehicleKg: f.weight_kg, cda: f.cda, crr: f.crr, riderKg: u.riderKg ?? 75, pillionKg: u.pillionKg ?? 0, cargoKg: u.cargoKg ?? 0, speedKph: u.speedKph ?? 55, cityFrac: u.cityFrac ?? 0.6, tempC: u.tempC ?? 32, acLevel: u.acLevel ?? 2 });
   const md = MAINT_DEFAULTS[seg];
   // P0: subsidy is date-driven via subsidy.js — expired scheme forces ₹0 (never silently applied).
   const edrive = pmEdriveSubsidy({ tariffCode: t.code, segment: seg, batteryKwh: f.battery_kwh });
   const sub = edrive.amount;
-  const tco = trueTco({ priceEv: f.price_inr, priceIce: p.icePrice || f.price_inr * 0.6, subsidyEv: sub, kmPerDay: u.kmPerDay ?? 40, realWhPerKm: rr.realWhPerKm, iceKmPerL: u.iceKmpl || (seg === '2W' ? 50 : seg === '3W' ? 28 : 15), fuelPerL: t.code.startsWith('IN') ? t.petrol_per_L : t.petrol_per_L * 83.5, homeKwhPrice: t.code.startsWith('IN') ? t.home_kwh : t.home_kwh * 83.5, dcfcKwhPrice: t.code.startsWith('IN') ? t.dcfc_kwh : t.dcfc_kwh * 83.5, homeFrac: u.homeFrac ?? 0.85, maintEvPerKm: md.ev, maintIcePerKm: md.ice, insuranceEvYear1: f.price_inr * 0.032, insuranceIceYear1: f.price_inr * 0.6 * 0.03, years: u.years ?? 5 });
+  const inINR = t.code.startsWith('IN');
+  const tco = trueTco({ priceEv: f.price_inr, priceIce: p.icePrice || f.price_inr * 0.6, subsidyEv: sub, kmPerDay: u.kmPerDay ?? 40, realWhPerKm: rr.realWhPerKm, iceKmPerL: u.iceKmpl || (seg === '2W' ? 50 : seg === '3W' ? 28 : 15), fuelPerL: inINR ? t.petrol_per_L : toInr(t.petrol_per_L), homeKwhPrice: inINR ? t.home_kwh : toInr(t.home_kwh), dcfcKwhPrice: inINR ? t.dcfc_kwh : toInr(t.dcfc_kwh), homeFrac: u.homeFrac ?? 0.85, maintEvPerKm: md.ev, maintIcePerKm: md.ice, insuranceEvYear1: f.price_inr * 0.032, insuranceIceYear1: f.price_inr * 0.6 * 0.03, years: u.years ?? 5 });
   const soh = estimateSoh({ chemistry: f.chemistry, ageYears: u.ageYears ?? 0, dcfcFrac: u.dcfcFrac ?? 0.15 });
   const own = OWN.get(f.id);
-  return { model: { ...f, tariff: t.code, subsidyApplied: sub, subsidyStatus: edrive.status, subsidyNote: edrive.note }, realRangeKm: rr.realRangeKm, honestLabKm: rr.honestLabKm, realWhPerKm: rr.realWhPerKm, narrative: rr.narrative, tco, soh, resaleYr3: resaleForecast(f.price_inr - sub, seg, f.chemistry, 90, 3), ownerVerified: own ? { n: own.n, avgKm: Math.round((own.sum / own.n) * 10) / 10 } : { n: 0, avgKm: null } };
+  return { model: { ...f, tariff: t.code, subsidyApplied: sub, subsidyStatus: edrive.status, subsidyNote: edrive.note }, realRangeKm: rr.realRangeKm, honestLabKm: rr.honestLabKm, realWhPerKm: rr.realWhPerKm, narrative: rr.narrative, tco, soh, resaleYr3: resaleForecast(f.price_inr - sub, seg, f.chemistry, 90, 3), ownerVerified: own ? { n: own.n, avgKm: Math.round((own.sum / own.n) * 10) / 10 } : { n: 0, avgKm: null }, currency: { tariff: t.code, tcoUnit: 'INR', displayHint: inINR ? 'INR' : 'USD-convertible', fxInrPerUsd: fx.inrPerUsd, fxAsOf: fx.asOf } };
 }
 
 const BOOT_MS = Date.now();
@@ -111,6 +137,9 @@ function depHealth() {
     bundle: { models: BUNDLE.meta.total, curated: BUNDLE.meta.curated, as_of: BUNDLE.meta.as_of, schema: BUNDLE.meta.schema_version ?? 1 },
     seoBuilt: seo, sqlite,
     verification: { t0_tests: v.t0_tests ?? 6, t1_curated: v.t1_curated ?? BUNDLE.meta.curated, tariff_snapshot: v.t2_tariff_as_of, affirmed_on: v.t2_affirmed_on, next_due: v.t2_next_due, sla_days: v.t2_sla_days ?? 45, realtime_claimed: v.t5_realtime_claimed ?? false, schema: v.schema_version },
+    fx: fxInfo(),
+    rum: rumSummary(),
+    multiInstance: { mode: 'single-instance', redisBackedLimits: false, note: 'Redis-backed limits + aggregates are the documented pre-SLA upgrade (docs/API.md). This instance uses in-memory token buckets.' },
     ownerAggregates: BUNDLE.meta.owner_aggregates ?? 0,
     uptimeSec: Math.floor((Date.now() - BOOT_MS) / 1000), engine: 'physics-v2',
   };
@@ -170,7 +199,9 @@ const server = http.createServer(async (req, res) => {
       const evs = Array.isArray(p.events) ? p.events.slice(0, 20) : [];
       for (const e of evs) {
         if (!e || typeof e.n !== 'string') continue;
-        EVENTS.push({ n: String(e.n).slice(0, 40), t: Date.now() });
+        const name = String(e.n).slice(0, 40);
+        if (name === 'rum_webvitals' && e.p && typeof e.p === 'object') rumRecord(e.p);
+        EVENTS.push({ n: name, t: Date.now() });
         if (EVENTS.length > 500) EVENTS.shift();
       }
       send(req, res, 200, { ok: true }); log(200); return;

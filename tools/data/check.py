@@ -102,6 +102,20 @@ try:
     con.close()
 except Exception as e:
     errs.append(f"sqlite governance check failed: {e}")
+# Enterprise 2026: FX must be explicit (no silent 83.5), compare renderer must not
+# reference undefined vars, method hub must cover fan-out intents.
+try:
+    v = bundle["meta"].get("verification", {})
+    if not (v.get("fx") or {}).get("INR"):
+        errs.append("bundle verification.fx.INR missing — FX must ride every estimate (see tariffs.json _meta.fx_2026_04)")
+    rev = (ROOT / "tools" / "seo" / "render-ev.js").read_text(encoding="utf-8")
+    _cmp = rev.split("renderComparePage", 1)[1] if "renderComparePage" in rev else ""
+    if "esc(m.cert_id || m.cy)} · PDF receipt" in _cmp:
+        errs.append("render-ev.js compare renderer references undefined m.* — use a.cert_id/b.cert_id")
+    if "knowsAbout" not in rev:
+        errs.append("render-ev.js missing Organization knowsAbout entity (2026 citation tie-breaker)")
+except Exception as e:
+    errs.append(f"enterprise gate failed: {e}")
 
 if errs:
     print("DATA CHECK FAILED:"); [print(" -", e) for e in errs]; sys.exit(1)

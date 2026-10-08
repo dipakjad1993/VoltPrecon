@@ -88,7 +88,7 @@ summaries). Re-verify quarterly — this file rots faster than the physics does.
 
 ## 4 · Moat math
 
-920 models × 25 geos × 3 intents = **69,000 programmatic URLs** (450
+920 models × 25 geos × 3 intents = **69,000 programmatic URLs** (540
 curated-first pre-rendered + dynamic renderer for the rest; staged: curated indexable,
 estimated `noindex` + `sitemap-estimated.xml` until owner-verified). Zero link-building needed; FAQ schema
 targets featured snippets + AI-Overview citations. Tools convert ~4.2× vs blogs

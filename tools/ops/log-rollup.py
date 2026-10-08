@@ -52,6 +52,8 @@ def main(argv):
     for r, n in errs.most_common(12): print(f"  {n:6d}  {r}")
     print("-- backlog hints --")
     print("  pipe ?q= values from /api/v1/models into models backlog when zero-result telemetry lands here")
+    print("  field web-vitals: query /api/v1/health rum (p75 LCP/INP/CLS) — lab budgets in CI, field numbers here close lender SLAs")
+    print("  thin-tail: join zero-impression 90d URLs (GSC Pages) with dist/seo/triage-410.txt before any 410 run")
     print("ROLLUP OK")
 
 if __name__ == "__main__":

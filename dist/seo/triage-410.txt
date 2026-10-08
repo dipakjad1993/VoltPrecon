@@ -1,0 +1,55 @@
+# 410 candidates: estimated models with no owner aggregate (thin tail).
+# Rule: no aggregate + <300 unique words + zero clicks/<10 impressions 90d (GSC) -> 410 Gone, not noindex.
+# Curated pages are never listed here. Re-run after rollup-owners.py enriches models.
+# generated from bundle total=920 curated=78
+revolt-moto-5.0-2025-empowered-0  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+kia-mpv-48.5-2024-st-1  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+fiat-hatch-40.2-2025-essence-2  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+surron-trail-3.7-2023-s-3  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+tata-cargo-16.4-2024-pro-4  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+ather-scooter-4.5-2023-s-5  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+hyundai-sedan-61.3-2025-exclusive-6  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+honda-moped-2.2-2026-exclusive-7  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+byd-mpv-38.3-2025-pro-8  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+piaggio-cargo-11.8-2024-essence-9  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+mahindra-auto-9.8-2024-accomplished-10  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+yadea-moped-2.7-2026-accomplished-11  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+bajaj-auto-6.9-2023-std-12  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+altigreen-cargo-16.5-2024-pro-13  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+revolt-moto-8.8-2026-plus-14  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+mg-mpv-54.6-2023-plus-15  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+byd-suv-50.7-2026-empowered-16  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+olaelectric-scooter-3.5-2026-essence-17  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+surron-trail-6.0-2023-lr-18  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+revolt-moto-8.0-2026-s-19  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+zeekr-sedan-82.5-2025-empowered-20  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+surron-trail-4.3-2025-lr-21  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+mahindra-cargo-16.6-2026-std-22  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+niu-moped-1.3-2024-hr-23  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+honda-moped-2.8-2024-std-24  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+mahindra-cargo-14.6-2023-plus-25  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+atul-auto-6.5-2025-hr-26  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+zero-trail-3.9-2023-accomplished-27  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+tata-suv-55.0-2024-exclusive-28  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+piaggio-cargo-12.3-2024-accomplished-29  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+ktm-trail-5.4-2025-essence-30  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+zero-trail-6.8-2023-plus-31  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+surron-trail-5.5-2026-empowered-32  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+kia-mpv-51.7-2023-st-33  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+kia-mpv-61.9-2026-lr-34  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+mahindra-cargo-14.0-2025-st-35  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+ather-scooter-3.1-2026-max-36  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+toyota-mpv-41.6-2026-std-37  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+ktm-trail-7.1-2023-empowered-38  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+byd-suv-48.9-2026-std-39  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+bajaj-auto-8.4-2023-pro-40  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+orxa-moto-3.9-2025-exclusive-41  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+piaggio-cargo-19.6-2023-essence-42  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+tesla-suv-73.9-2026-accomplished-43  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+mg-hatch-40.8-2024-pro-44  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+nio-sedan-90.9-2025-exclusive-45  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+atul-auto-7.5-2026-lr-46  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+byd-mpv-56.1-2025-lr-47  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+atul-auto-9.0-2025-plus-48  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+byd-mpv-54.1-2024-std-49  # estimated, no owner aggregate yet -> keep noindex; 410 if GSC shows zero value 90d
+# ... +792 more (full list = all estimated without aggregates)

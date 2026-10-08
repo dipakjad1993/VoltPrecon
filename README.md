@@ -81,7 +81,7 @@ Staging preview: `docker compose --profile staging up` (app :8081, api :3002).
 | `packages/data/src/` | 78 lab-verified models + parametric expansion to 920, 25 tariffs + history, subsidies + gazette watch, 6 chemistries |
 | `packages/data/db/voltprecon.sqlite` | Built artifact: schema_version + models (+sources) + tariffs + tariffs_history + owner_aggregates + FTS5 |
 | `packages/api/src/server.js` | Zero-dep REST: health/models/estimate/compare + owner-range/events + sitemap (see `docs/API.md` for SLA + version policy) |
-| `tools/seo/` | 300 pre-rendered pages + **dynamic /ev/* + /compare/* renderer** (all 69,000 sitemap URLs resolve) + method pages + llms.txt dossier |
+| `tools/seo/` | 540 pre-rendered pages + **dynamic /ev/* + /compare/* renderer** (all 69,000 sitemap URLs resolve) + 5 method pages + llms.txt dossier |
 | `tools/data/` | `refresh-tariffs.py` importer, `subsidy-watch.py` gazette cron, `rollup-owners.py` nightly aggregates, `check.py` governance gate |
 | `tools/ops/` | `log-rollup.py` weekly analytics (replaces an analytics vendor, keeps privacy) |
 | `tools/qa/` | `app-smoke.mjs` (3-stage click-through), `security-headers.mjs` (CSP/HSTS contract) |

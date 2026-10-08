@@ -12,6 +12,10 @@ const LASTMOD = '2026-04-15';
 // Same enterprise style as programmatic pages: Pixel stack + Material 3 light scheme.
 const PAGE_CSS = `body{font-family:"Google Sans Flex","Google Sans Text","Google Sans",Roboto,"Segoe UI",system-ui,Arial,sans-serif;background:#f5f7f2;color:#191c17;margin:0;line-height:24px;-webkit-font-smoothing:antialiased}main,nav{max-width:720px;margin:0 auto;padding:0 16px}main{background:#fff;border:1px solid #c1c9b8;border-radius:24px;margin:16px auto;padding:20px}h1{font-size:24px;line-height:32px;font-weight:500}h2{font-size:16px;line-height:24px;font-weight:500}a{color:#006d3b}table{border-collapse:collapse;width:100%;font-size:14px}th{font-size:12px;font-weight:500;color:#43483e;text-align:left;padding:8px;border-bottom:1px solid #c1c9b8}td{padding:10px 8px;border-bottom:1px solid #c1c9b8}small{color:#43483e}nav{font-size:14px;color:#43483e;padding-top:12px}`;
 
+const AUTHORS = [
+  { '@type': 'Person', name: 'VoltPrecon Data Steward', url: `${BASE}/method/normalizer/`, jobTitle: 'Physics + tariff verification', knowsAbout: ['EV range physics', 'ARAI/WLTP/EPA/CLTC normalization', 'battery degradation'] },
+];
+const ORG_JSON = { '@context': 'https://schema.org', '@type': 'Organization', name: 'VoltPrecon', url: BASE, logo: `${BASE}/icon-512.png`, sameAs: ['https://www.linkedin.com/company/voltprecon', 'https://x.com/voltprecon'], knowsAbout: ['EV real-world range physics', 'EV total cost of ownership', 'battery state of health', 'EV resale forecasting', 'electricity tariffs'] };
 const PAGES = [
   {
     slug: 'normalizer',
@@ -60,6 +64,22 @@ const PAGES = [
 <h2>Resale math</h2><p><code>resale = pricePaid × segmentDep[yr] × chemMod × sohBand</code> — 4W year-3 base 58%, 2W 52%; LFP ×1.06, sodium-ion ×0.94; health ≥92% ×1.08, &lt;78% ×0.78. Always get an independent battery test on used EVs: documented variance hits 13.5%.</p>`,
     cites: 'WoodMac pack-price series (yearly) · AVILOO 500k-test variance study · Recurrent dealer transaction data · EV-Volumes/BNEF segment depreciation',
   },
+  {
+    slug: 'winter-range',
+    title: 'Winter EV range at −7°C — heater, heat pump, and preheat math',
+    answer:
+      'At −7°C with heater on, a 4W EV loses roughly 30% of honest range: PTC heaters draw ~3.2 kW while heat pumps draw ~1.1 kW, and cold LFP resistance adds ~20% before HVAC. Preheat on wall power, keep 20–80%, and check the heat-pump option box — it is worth about 2 kW of winter range.',
+    body: `<h2>Direct math</h2><p>Michigan Model Y: 531 km EPA → honest lab → ~348 km (216 mi) at −7°C doing 120 kph with heater. Scooters lose less (0.25 kW heater class). LFP k=0.012 is the most cold-sensitive common chemistry; sodium-ion k=0.004 and LTO k=0.002 suffer least.</p><h2>Buyer checklist</h2><ul><li>Heat pump? If yes, winter penalty drops ~2 kW continuous.</li><li>Preheat while plugged in — wall power, not battery.</li><li>City share helps: regen recovers 10–18% in stop-go.</li></ul>`,
+    cites: 'Geotab seasonal aggregates · AVILOO cold-test series · EPA 5-cycle cold documentation · owner-verified winter reports (T4 aggregates)',
+  },
+  {
+    slug: 'subsidy-expiry',
+    title: 'EV subsidies after July 2026 — PM E-DRIVE expiry and what replaces it',
+    answer:
+      'PM E-DRIVE ended 31 July 2026: post-subsidy TCO applies from 1 Aug 2026 with no negative countdowns. 2W/3W-only, min(₹5k×kWh, cap), auto-expired and test-locked in the engine. US IRA 30D is a 4-gate questionnaire ($7,500/$3,750/$0); EU/ID/TH schemes apply by localisation flag, default off with explainer.',
+    body: `<h2>What expired, what did not</h2><p>PM E-DRIVE: valid till 2026-07-31 23:59 IST, ₹0 from 2026-08-01. GST 5% on EVs continues. The engine date-drives this (packages/engine/src/subsidy.js) — expired schemes force ₹0, never silently applied. Gazette watch runs monthly (tools/data/subsidy-watch.py).</p><h2>How to quote TCO now</h2><p>Always state post-subsidy TCO with the subsidy line at ₹0 and the expiry date. Lenders: use /api/v1/estimate subsidyStatus (applied/expired/inapplicable) — never hardcode a subsidy amount.</p>`,
+    cites: 'PM E-DRIVE gazette (till 31 Jul 2026) · GST 5% notification · US IRA 30D guidance · FR/DE/ID scheme docs (see packages/data/src/subsidies.json)',
+  },
 ];
 
 for (const p of PAGES) {
@@ -73,7 +93,11 @@ for (const p of PAGES) {
     + `<style>${PAGE_CSS}</style>`
     + `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [{ '@type': 'Question', name: p.title, acceptedAnswer: { '@type': 'Answer', text: p.answer } }] })}</script>`
     + `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'VoltPrecon', item: BASE + '/' }, { '@type': 'ListItem', position: 2, name: 'Method', item: BASE + '/method/normalizer/' }, { '@type': 'ListItem', position: 3, name: p.slug, item: url }] })}</script>`
+    + `<script type="application/ld+json">${JSON.stringify(ORG_JSON)}</script>`
+    + `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': 'Article', headline: p.title, author: AUTHORS, publisher: { '@type': 'Organization', name: 'VoltPrecon', url: BASE }, datePublished: '2026-04-15', dateModified: LASTMOD })}</script>`
+    + `<meta name="author" content="VoltPrecon Data Steward">`
     + `</head><body><nav><a href="${BASE}/">VoltPrecon</a> › Method › ${p.slug}</nav><main><h1>${p.title}</h1>`
+    + `<p><small>By VoltPrecon Data Steward · physics + tariff verification · reviewed ${LASTMOD}</small></p>`
     + `<section aria-label="Direct answer"><h2>Direct answer</h2><p><strong>${p.answer}</strong></p></section>${p.body}`
     + `<h2>Keep reading</h2><ul>${others}<li><a href="${BASE}/">Open the interactive calculator (no login, offline)</a></li></ul>`
     + `<h2>Sources + freshness</h2><p><small>${p.cites}. Last reviewed ${LASTMOD}. Physics runtime: packages/engine (zero-dep, tested).</small></p>`

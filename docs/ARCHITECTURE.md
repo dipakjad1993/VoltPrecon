@@ -21,7 +21,7 @@ data pipeline: curated JSON (per-row source_url/verified_on) + tariffs + subsidi
    ├── subsidy-watch.py (monthly gazette cron; engine auto-expires, tested)
    └── rollup-owners.py (nightly owner aggregates → bundle + pages)
 
-seo: generate.js (300 static) + method.js (3 crawlable) + llms.txt dossier + ping.js post-deploy
+seo: generate.js (540 static: 30 curated x 6 geos x 3 intents) + method.js (5 crawlable) + llms.txt dossier + ping.js post-deploy + scaled-audit/share-of-model/bing-submit
 ```
 
 **Decisions:** vanilla JS (no framework) for 3G + 10-yr maintainability; TS files are typed references, `.js` is runtime truth (both tested + 2,500-case fuzz); Python parity engine for analysts; SQLite for analysts/fleet ETL (WAL mode; nightly dumps to object storage before any SLA), JSON bundle for the client; zero production npm deps (API + engine + static) = minimal CVE surface; Docker pins node:20-slim + digest-resolve cadence in CI.
@@ -32,4 +32,12 @@ seo: generate.js (300 static) + method.js (3 crawlable) + llms.txt dossier + pin
 
 **Freshness:** tariffs/fuel monthly importer + 45-day CI gate; subsidies gazette watch; specs on launch (count assertion); pack prices yearly. See docs/VERIFICATION.md.
 
-**CI:** generator → check (counts + governance + freshness) → gazette watch → python parity → node tests (unit + fuzz) → app smoke → sec-headers → seo build → integrity + staging diff → perf budget → docker build + digest record → status.json. See `.github/workflows/ci.yml`.
+**CI:** generator → check (counts + governance + freshness + FX/entity gates) → gazette watch → python parity → node tests (unit + fuzz) → app smoke → sec-headers → seo build → scaled-audit + sqlite-dump checks → integrity + staging diff → perf budget → docker build + digest record → status.json. See `.github/workflows/ci.yml`.
+
+**Pre-SLA multi-instance path (documented before signature):** Redis-backed rate
+limits + owner aggregates (replacing in-memory `OWN`/`EVENTS`/`RL` maps in
+`packages/api/src/server.js`), SQLite WAL (already on) + nightly dumps to object
+storage (`tools/ops/sqlite-dump.py` → bucket cron), read-replica posture, and the
+`/health` dependency block (already shipped: bundle, seoBuilt, sqlite, fx, rum,
+multiInstance) wired to alerting + status-page history. Full checklist:
+`docs/ENTERPRISE.md` §8.

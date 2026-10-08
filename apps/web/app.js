@@ -85,6 +85,33 @@ function showStage(n) {
   if (typeof window.scrollTo === 'function') { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch {} }
 }
 
+/* ---------- privacy-friendly field web-vitals (RUM, no vendor, no PII) ----------
+   LCP/INP/CLS via PerformanceObserver, beaconed once per estimate as
+   rum_webvitals {lcpMs,inpMs,cls}. No URL, no IP, no cookie. Surfaced in
+   /api/v1/health rum + weekly log rollup. Lab budgets stay in CI; field wins deals. */
+function beaconRUM() {
+  try {
+    if (!('PerformanceObserver' in window)) return;
+    const vals = {};
+    const po = new PerformanceObserver((list) => {
+      for (const e of list.getEntries()) {
+        if (e.entryType === 'largest-contentful-paint' && e.startTime) vals.lcpMs = Math.round(e.startTime);
+        if (e.entryType === 'layout-shift' && !e.hadRecentInput) vals.cls = Math.round(((vals.cls || 0) + e.value) * 1000) / 1000;
+      }
+    });
+    try { po.observe({ type: 'largest-contentful-paint', buffered: true }); } catch {}
+    try { po.observe({ type: 'layout-shift', buffered: true }); } catch {}
+    const send = () => {
+      try {
+        let inp = null;
+        const es = (performance.getEntriesByType && performance.getEntriesByType('event')) || [];
+        for (const e of es) { if (e.duration && (e.name === 'click' || e.name === 'keydown')) inp = inp == null ? e.duration : Math.max(inp, e.duration); }
+        if (vals.lcpMs != null || inp != null || vals.cls != null) TQ.track('rum_webvitals', { lcpMs: vals.lcpMs ?? null, inpMs: inp != null ? Math.round(inp) : null, cls: vals.cls ?? null });
+      } catch {}
+    };
+    setTimeout(send, 8000);
+  } catch {}
+}
 /* ---------- privacy-friendly telemetry (anonymous, batched, no PII) ---------- */
 const TQ = {
   load() { try { return JSON.parse(localStorage.getItem('vp-events') || '[]'); } catch { return []; } },
@@ -142,6 +169,7 @@ function submitOwn() {
 
 async function boot() {
   initTheme();
+  beaconRUM();
   if (window.VP_I18N) VP_I18N.apply(VP_I18N.lang());
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
   const units = $('units'); if (units) { units.value = UNITS; units.onchange = () => { UNITS = units.value; try { localStorage.setItem('vp-units', UNITS); } catch {} }; }
@@ -230,9 +258,11 @@ function updateSlab() {
   const t = DB.tariffs.find((x) => x.code === $('ccy').value);
   if (!t) return;
   const pin = ($('pin').value || '').trim();
+  const v = DB.meta.verification || {};
   const slab = t.slab_note ? `Slab: ${t.slab_note}` : '';
   const pinBit = pin ? ` Pincode ${pin} noted — we don't geocode; match the slab on your bill.` : ' Add pincode to sanity-check your slab against your bill.';
-  $('slabNote').textContent = `${t.country}: home ${curSym(t.code)}${t.home_kwh}/kWh, fast ${curSym(t.code)}${t.dcfc_kwh}/kWh. ${slab}${pinBit}`;
+  const fresh = v.t2_affirmed_on ? ` Snapshot ${DB.meta.as_of}, reviewed ${v.t2_affirmed_on}${v.t2_next_due ? `, next ${v.t2_next_due}` : ''} (${v.t2_sla_days || 45}-day SLA).` : '';
+  $('slabNote').textContent = `${t.country}: home ${curSym(t.code)}${t.home_kwh}/kWh, fast ${curSym(t.code)}${t.dcfc_kwh}/kWh. ${slab}${pinBit}${fresh}`;
 }
 function autoSpeed() { const cf = +$('cityFrac').value; if (document.activeElement !== $('speed')) $('speed').value = cf > 80 ? 42 : cf > 50 ? 55 : cf > 25 ? 80 : 110; }
 

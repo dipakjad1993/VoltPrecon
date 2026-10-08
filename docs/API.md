@@ -28,6 +28,23 @@ Codes: `RATE_LIMITED` (429 + `Retry-After`), `BAD_RANGE_REPORT` (400),
 the documented pre-SLA upgrade — see Reliability below). Reads and writes share
 the bucket. `429` always includes `Retry-After` seconds.
 
+## Currency + FX (explicit, never silent)
+
+TCO math runs in **INR units**. Non-IN tariffs convert via the stamped bundle
+rate: `fxInrPerUsd` + `fxAsOf: 2026-04-15` (source: `tariffs.json`
+`_meta.fx_2026_04`). Every `POST /estimate` response carries:
+
+```json
+{ "currency": { "tariff": "US-TX", "tcoUnit": "INR", "displayHint": "USD-convertible", "fxInrPerUsd": 83.5, "fxAsOf": "2026-04-15" } }
+```
+
+## Field web-vitals (RUM, privacy-friendly)
+
+`POST /api/v1/events` accepts `{n:"rum_webvitals", p:{lcpMs,inpMs,cls}}` from the
+PWA (PerformanceObserver, no URL/IP/cookie). `GET /api/v1/health` surfaces
+`rum` p75 vs targets (LCP 2500ms / INP 200ms / CLS 0.1). Lab budgets stay in CI;
+field numbers are the SLA evidence. See `docs/ENTERPRISE.md`.
+
 ## SLA (from our own access logs, single-instance baseline)
 
 | Signal | Target | Notes |

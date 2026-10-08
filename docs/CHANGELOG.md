@@ -1,5 +1,15 @@
 # VoltPrecon Changelog — public freshness log (2026 ranking input: dates users + Google see)
 
+## 2026-10-08 — Enterprise SEO/GEO + trust-pack release (v1.2.0)
+- **Entity authority (2026 citation tie-breaker):** `Organization` schema with `knowsAbout` + named data-steward `Person` authors on every `/ev/*`, `/compare/*`, and `/method/*` page; author bylines + `dateModified` = tariff affirmed date. Schema is entity verification, not a SERP trick (per Google May-15-2026 generative search guide).
+- **Explicit FX:** TCO math runs in INR; every `/estimate` response now carries `currency {tcoUnit, fxInrPerUsd, fxAsOf}` from the stamped `fx_2026_04` table — never silent. Same rate surfaced on SEO pages + `/health fx`.
+- **Field RUM (privacy-friendly):** PWA beacons `rum_webvitals {lcpMs,inpMs,cls}` (PerformanceObserver, no URL/IP/cookie) to `/api/v1/events`; `GET /health` exposes `rum` p75 vs LCP 2500ms / INP 200ms / CLS 0.1 targets. Lab budgets stay in CI; field numbers close SLAs. Shell still 55KB of 60KB.
+- **Freshness surfaced everywhere:** per-page tariff tables carry snapshot/as-of + affirmed/next-due + SLA + regulator receipt link; app slab note shows review stamp; `/status.json` adds fx, sla_days, realtime_claimed:false, method-page list.
+- **Fan-out hub:** 2 new crawlable method spokes — `winter-range` (−7°C heater math) and `subsidy-expiry` (post-PM-E-DRIVE quoting) — for the 161%-citation-lift fan-out pattern; `llms.txt` posture corrected to crawl-hygiene (not a ranking lever).
+- **Scaled-content defense:** `tools/seo/scaled-audit.py` per-template fix/thin/retire audit + `dist/seo/triage-410.txt` (410 Gone for zero-value tail, not noindex) gated in CI; `tools/seo/share-of-model.py` weekly GEO scoreboard (20 prompts × 4 types × 6 engines); `tools/seo/bing-submit.py` (Copilot draws from Bing).
+- **Durability:** `tools/ops/sqlite-dump.py` WAL checkpoint + dated dumps (wire to object storage pre-SLA); `/health` documents single-instance mode + Redis upgrade path; `docs/ENTERPRISE.md` trust pack (SLA, DPA/SOC2 inputs, VPAT roadmap, pre-SLA checklist).
+- **CI that passes:** fixed 3 latent red gates — compare-renderer `m.cert_id` ReferenceError, `b.total` vs `b.meta.total` staging-diff false-fail, hardcoded SEO sample path (now robust discovery), and banned-claim gate now respects ladder-language negation (marketing claims still fail closed).
+
 ## 2026-10-08 — Enterprise readiness release (v1.1.0)
 - **Bajaj Chetak 2026 lineup (verified):** one stale "3201" row replaced with the real five — C2501 (2.5 kWh, 113 km IDC, ₹99,802), C3001 (3.0 kWh, 127 km, ₹1,14,270), C3503 (3.5 kWh, 151 km, ₹1,24,157), C3502 (3.5 kWh, 153 km, ₹1,36,939), C3501 (3.5 kWh, 153 km, ₹1,52,140) — specs ex chetak.com brochure Apr-2026 + Bajaj Apr-29-2026 press release (top speeds, chargers), Bengaluru ex-showroom. Curated 62 → 66.
 - **Cascading picker:** brand dropdown → model dropdown (brand-only models, curated first) + full 920-model browsable search with make filter, show-more pagination, and tariff review stamp.

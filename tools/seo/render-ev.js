@@ -20,12 +20,48 @@ export const kmToMi = (km) => Math.round(km * 0.621371);
 
 export function modelSlug(m) { return slug(`${m.mk}-${m.mo}-${m.v}`); }
 
+export const FX_AS_OF = '2026-04-15';
+export function fxRate(B) {
+  try { return (B.meta && B.meta.verification && B.meta.verification.fx && B.meta.verification.fx.INR) || 83.5; } catch { return 83.5; }
+}
+
 export function curFmt(B, code, inrN) {
   if (String(code).startsWith('IN')) return '₹' + Math.round(inrN).toLocaleString('en-IN');
   const sym = FX[code] || '$';
-  const usd = inrN / 83.5;
+  const usd = inrN / fxRate(B);
   if (code === 'ID') return 'Rp' + Math.round(usd * 15800).toLocaleString('en-US');
   return sym + Math.round(usd).toLocaleString('en-US');
+}
+
+export function currencyOf(code) {
+  const m = { IN: 'INR', US: 'USD', DE: 'EUR', FR: 'EUR', GB: 'GBP', ID: 'IDR', VN: 'VND', TH: 'THB', BR: 'BRL', CN: 'CNY', JP: 'JPY' };
+  return m[String(code).split('-')[0]] || 'USD';
+}
+
+// Regulator homepage receipt per tariff geo (deep circular links live in
+// tools/data/refresh-tariffs.py SOURCES). Homepage-level keeps pages honest
+// without pretending each number is a live feed tick.
+export const REGULATOR_URL = {
+  'IN-MH': 'https://www.merc.gov.in', 'IN-DL': 'https://www.derc.gov.in',
+  'US-TX': 'https://www.eia.gov', 'US-MI': 'https://www.eia.gov', 'US-CA': 'https://www.eia.gov',
+  DE: 'https://www.bundesnetzagentur.de', FR: 'https://www.cre.fr', GB: 'https://www.ofgem.gov.uk',
+  CN: 'https://www.nea.gov.cn', JP: 'https://www.meti.go.jp', ID: 'https://www.pln.co.id',
+  VN: 'https://www.evn.com.vn', TH: 'https://www.eppo.go.th', BR: 'https://www.aneel.gov.br',
+  AE: 'https://www.dewa.gov.ae', SA: 'https://www.se.com.sa', AU: 'https://www.aer.gov.au',
+  NL: 'https://www.acm.nl', NO: 'https://www.nve.no', ZA: 'https://www.eskom.co.za',
+  MX: 'https://www.cre.gob.mx', PH: 'https://www.doe.gov.ph', NG: 'https://www.nerc.gov.ng',
+  TR: 'https://www.epdk.gov.tr', KR: 'https://www.kpx.or.kr',
+};
+
+export function freshnessOf(B, LASTMOD) {
+  const v = (B.meta && B.meta.verification) || {};
+  return {
+    asOf: v.t2_tariff_as_of || B.meta.as_of || LASTMOD,
+    affirmed: v.t2_affirmed_on || LASTMOD,
+    nextDue: v.t2_next_due || '',
+    by: v.t2_affirmed_by || 'data-steward',
+    slaDays: v.t2_sla_days || 45,
+  };
 }
 
 export function computeRR(realRange, m, tempC = 32) {
@@ -55,12 +91,17 @@ export function siblingLinks(B, ranked, BASE, m, g, it) {
 export function tariffTable(B, g) {
   const t = B.tariffs.find((x) => x.code === g);
   if (!t) return '';
+  const f = freshnessOf(B, B.meta.as_of);
   const fuel = t.petrol_per_L != null ? (g.startsWith('IN') ? `₹${t.petrol_per_L}/L` : `$${t.petrol_per_L}/L`) : '—';
   const home = g.startsWith('IN') ? `₹${t.home_kwh}/kWh` : `$${t.home_kwh}/kWh`;
   const dcfc = g.startsWith('IN') ? `₹${t.dcfc_kwh}/kWh` : `$${t.dcfc_kwh}/kWh`;
-  return `<table border="1" cellpadding="6" cellspacing="0"><caption>Apr-2026 ${esc(t.country)} energy baseline used on this page (override in app)</caption>`
+  const reg = REGULATOR_URL[g] ? ' · regulator receipt: <a href="' + REGULATOR_URL[g] + '" rel="noopener">' + esc(REGULATOR_URL[g].replace('https://www.', '')) + '</a>' : '';
+  const nextBit = f.nextDue ? ', next review ' + esc(f.nextDue) : '';
+  const dueBit = f.nextDue ? ' · next due ' + esc(f.nextDue) : '';
+  return `<table border="1" cellpadding="6" cellspacing="0"><caption>${esc(f.asOf)} ${esc(t.country)} energy baseline used on this page (snapshot, affirmed ${esc(f.affirmed)}${nextBit} — override in app)</caption>`
     + `<tr><th>Home power</th><th>Fast charge (DCFC)</th><th>Petrol</th><th>Grid CO₂</th></tr>`
     + `<tr><td>${esc(home)}</td><td>${esc(dcfc)}</td><td>${esc(fuel)}</td><td>${esc(String(t.co2_g_per_kwh))} g/kWh</td></tr></table>`
+    + `<p><small>Snapshot ${esc(f.asOf)} · affirmed ${esc(f.affirmed)} (${esc(f.by)}, ${f.slaDays}-day SLA)${dueBit}${reg}. Snapshots with SLAs — not per-second ticks; cars are not bought on tick data.</small></p>`
     + (t.slab_note ? `<p><small>${esc(t.slab_note)}</small></p>` : '')
     + (t.note ? `<p><small>${esc(t.note)}</small></p>` : '');
 }
@@ -93,11 +134,15 @@ export function renderEvPage({ realRange, B, ranked, BASE, LASTMOD, m, g, it, dy
       : `At year 3 the ${m.mk} ${m.mo} ${m.v} keeps roughly half its paid price on an LFP-family curve (segment ${esc(m.s)}, ${esc(m.ch)} chemistry), adjusted by measured battery health — always-full charging and hot NMC storage cut it ~2 points each. Get a battery test before buying used; variance up to 13.5% is documented.`;
   const title = `${m.mk} ${m.mo} ${m.v} ${it.slug === 'real-range' ? `Real Range (${realKm} km, not ${m.lab} km lab)` : it.slug === 'total-cost' ? `True Cost vs Petrol (${geoName})` : `Battery Health + Resale (${geoName})`} | VoltPrecon`;
   const desc = `${m.mk} ${m.mo}: lab ${m.lab}km (${m.cy}) but YOUR real range ≈ ${realKm}km${mphBit} at ${rr.realWhPerKm}Wh/km (${m.p}). 5-yr cost, breakeven, resale for ${geoName}. No login.`;
+  const f = freshnessOf(B, LASTMOD);
   const faqJson = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [{ '@type': 'Question', name: `What is the real range of the ${m.mk} ${m.mo} ${m.v} in ${geoName}?`, acceptedAnswer: { '@type': 'Answer', text: `Lab ${m.lab} km (${m.cy}); real-world ≈ ${realKm} km${mphBit} at ${rr.realWhPerKm} Wh/km (${m.p}, ±${conf.km} km).` } }, { '@type': 'Question', name: `Does ABRP cover the ${m.mk} ${m.mo}?`, acceptedAnswer: { '@type': 'Answer', text: `ABRP is 4W-only with paywalled weather and no 2W/3W coverage — this page covers ${m.s} physics with local ${geoName} tariffs instead.` } }] };
   const crumbJson = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'EVs', item: `${BASE}/` }, { '@type': 'ListItem', position: 2, name: `${m.mk} ${m.mo}`, item: `${BASE}/ev/${modelSlug(m)}/` }, { '@type': 'ListItem', position: 3, name: `${geoName} — ${it.slug}`, item: pageUrl }] };
   const vehicleJson = { '@context': 'https://schema.org', '@type': 'Vehicle', name: `${m.mk} ${m.mo} ${m.v}`, vehicleModelDate: String(m.y), fuelType: 'Electricity', driveWheelConfiguration: 'N/A' };
-  const authorJson = { "@context": "https://schema.org", "@type": "Article", author: { "@type": "Organization", name: "VoltPrecon", url: BASE, sameAs: ["https://www.linkedin.com/company/voltprecon", "https://x.com/voltprecon"] }, datePublished: "2026-04-15", dateModified: LASTMOD };
-  const productJson = { '@context': 'https://schema.org', '@type': 'Product', name: `${m.mk} ${m.mo} ${m.v}`, category: m.s, offers: { '@type': 'Offer', priceCurrency: g.startsWith('IN') ? 'INR' : 'USD', price: g.startsWith('IN') ? String(m.inr || 1200000) : String(Math.round((m.inr || 1200000) / 83.5)), availability: 'https://schema.org/InStock' } };
+  // 2026 entity authority: Organization with knowsAbout + named data-steward authors.
+  // Schema is entity verification (not a SERP trick post May-2026 Google guide).
+  const orgJson = { '@context': 'https://schema.org', '@type': 'Organization', name: 'VoltPrecon', url: BASE, logo: `${BASE}/icon-512.png`, sameAs: ['https://www.linkedin.com/company/voltprecon', 'https://x.com/voltprecon'], knowsAbout: ['EV real-world range physics', 'EV total cost of ownership', 'battery state of health', 'EV resale forecasting', 'electricity tariffs'] };
+  const authorJson = { '@context': 'https://schema.org', '@type': 'Article', author: [{ '@type': 'Person', name: 'VoltPrecon Data Steward', url: `${BASE}/method/normalizer/`, jobTitle: 'Physics + tariff verification', knowsAbout: ['EV range physics', 'ARAI/WLTP/EPA/CLTC normalization'] }], publisher: { '@type': 'Organization', name: 'VoltPrecon', url: BASE }, datePublished: '2026-04-15', dateModified: f.affirmed };
+  const productJson = { '@context': 'https://schema.org', '@type': 'Product', name: `${m.mk} ${m.mo} ${m.v}`, category: m.s, offers: { '@type': 'Offer', priceCurrency: currencyOf(g), price: g.startsWith('IN') ? String(m.inr || 1200000) : String(Math.round((m.inr || 1200000) / fxRate(B))), availability: 'https://schema.org/InStock' } };
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">`
     + `<title>${esc(title)}</title><meta name="description" content="${esc(desc)}"><meta name="robots" content="${robotsMeta}">`
     + `<link rel="canonical" href="${pageUrl}"><link rel="alternate" hreflang="x-default" href="${pageUrl}"><link rel="alternate" hreflang="en" href="${pageUrl}"><link rel="alternate" hreflang="en-IN" href="${pageUrl}"><link rel="alternate" hreflang="en-US" href="${pageUrl}"><link rel="alternate" hreflang="de" href="${pageUrl}"><link rel="alternate" hreflang="fr" href="${pageUrl}"><link rel="alternate" hreflang="id" href="${pageUrl}"><meta name="author" content="VoltPrecon Data Steward"><meta property="article:published_time" content="2026-04-15"><meta property="article:modified_time" content="${LASTMOD}">`
@@ -107,6 +152,7 @@ export function renderEvPage({ realRange, B, ranked, BASE, LASTMOD, m, g, it, dy
     + `<script type="application/ld+json">${JSON.stringify(crumbJson)}</script>`
     + `<script type="application/ld+json">${JSON.stringify(vehicleJson)}</script>`
     + `<script type="application/ld+json">${JSON.stringify(productJson)}</script>`
+    + `<script type="application/ld+json">${JSON.stringify(orgJson)}</script>`
     + `<script type="application/ld+json">${JSON.stringify(authorJson)}</script></head>`
     + `<body><nav aria-label="Breadcrumb"><a href="${BASE}/">VoltPrecon</a> › <a href="${BASE}/ev/${modelSlug(m)}/">${esc(m.mk + ' ' + m.mo)}</a> › ${esc(geoName)} › ${it.slug}</nav>`
     + `<main><h1>${esc(it.h1(m))} — ${esc(geoName)} · ${esc(moneyBit)}</h1>`
@@ -120,7 +166,8 @@ export function renderEvPage({ realRange, B, ranked, BASE, LASTMOD, m, g, it, dy
     + `<h2>What range will I get in winter with heater, or summer with pillion?</h2><p>Lab ${m.lab} km (${m.cy}) becomes honest lab then YOUR physics: speed vs ~${rr.vLabKph || 50} kph lab anchor, rider/load mass, HVAC ${rr.factors ? rr.factors.hvacKw : ""} kW, climate multiplier. Cold LFP needs preheat on wall power; heat above 38C adds battery-chiller load. Run city vs highway in the calculator.</p>`
     + `<h2>What battery health and resale should I expect at year 3?</h2><p>Segment depreciation times chemistry modifier times measured health band. LFP-family holds best; always-full and hot NMC storage each cut ~2 points. Get a battery test before buying used — 13.5% variance is documented.</p>`
     + `<h2>Keep exploring (same segment + method)</h2>${siblingLinks(B, ranked, BASE, m, g, it)}`
-    + `<h2>Sources + freshness</h2><p><small>${provenanceLine(m, LASTMOD)} · Tariffs: MERC/MSEDCL, EIA, BNetzA, EVN, PLN (Apr-2026 snapshot) · Physics: AVILOO/Geotab paired derates, WoodMac pack prices (yearly). Last reviewed ${LASTMOD} (tariff affirmed ${LASTMOD}, next due per tariffs.json). Cert ${esc(m.cert_id || m.cy)} · PDF receipt in app.${dynamic ? ' Rendered on demand from the same template + bundle as the static pages.' : ''} Found an error or own this EV? Submit your odo reading in the app — owner-verified aggregates tighten every page.</small></p>`
+    + `<h2>Sources + freshness</h2><p><small>${provenanceLine(m, LASTMOD)} · Tariffs: MERC/MSEDCL, EIA, BNetzA, EVN, PLN (snapshot ${esc(f.asOf)}, affirmed ${esc(f.affirmed)}${f.nextDue ? `, next due ${esc(f.nextDue)}` : ''}, ${f.slaDays}-day SLA) · Physics: AVILOO/Geotab paired derates, WoodMac pack prices (yearly, 2026 series). Last reviewed ${esc(f.affirmed)} (tariff affirmed ${esc(f.affirmed)}, next due ${esc(f.nextDue || 'per tariffs.json')}). Cert ${esc(m.cert_id || m.cy)} · FX ${fxRate(B)} INR/USD (${esc(FX_AS_OF)}) · PDF receipt in app.${dynamic ? ' Rendered on demand from the same template + bundle as the static pages.' : ''} Found an error or own this EV? Submit your odo reading in the app — owner-verified aggregates tighten every page.</small></p>`
+    + `<p><small>By VoltPrecon Data Steward · physics + tariff verification · <a href="${BASE}/method/normalizer/">methodology</a> · snapshots with SLAs, not per-second ticks.</small></p>`
     + `</main></body></html>`;
 }
 
@@ -137,14 +184,18 @@ export function renderComparePage({ realRange, B, BASE, LASTMOD, a, b, g }) {
   const desc = `${a.mk} ${a.mo} ≈ ${rA}km real vs ${b.mk} ${b.mo} ≈ ${rB}km real (lab ${a.lab}/${b.lab}km). Same physics, same ${geoName} tariffs, ranked by ₹/real-km. No login.`;
   const faqJson = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [{ '@type': 'Question', name: `Which is better value: ${a.mk} ${a.mo} or ${b.mk} ${b.mo}?`, acceptedAnswer: { '@type': 'Answer', text: `By cost per real km in ${geoName}, the ${win.mk} ${win.mo} wins. Real ranges: ${rA}km vs ${rB}km. Both are physics-computed, not lab claims.` } }] };
   const row = (m, rr, r, c) => `<tr><td><b>${esc(m.mk)} ${esc(m.mo)}</b> ${esc(m.v)}</td><td class="num">${r} km</td><td class="num">${m.lab} km (${esc(m.cy)})</td><td class="num">${esc(curFmt(B, g, m.inr || 1200000))}</td><td class="num">${esc(m.p === 'curated' ? '✅ verified' : '⚠ estimated')}</td></tr>`;
+  const orgJson = { '@context': 'https://schema.org', '@type': 'Organization', name: 'VoltPrecon', url: BASE, logo: `${BASE}/icon-512.png`, sameAs: ['https://www.linkedin.com/company/voltprecon', 'https://x.com/voltprecon'], knowsAbout: ['EV real-world range physics', 'EV total cost of ownership', 'battery state of health', 'EV resale forecasting'] };
+  const snapAsOf = (B.meta && B.meta.verification && B.meta.verification.t2_tariff_as_of) || 'Apr-2026';
+  const appLink = BASE + '/?model=' + encodeURIComponent(a.id);
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">`
     + `<title>${esc(title)}</title><meta name="description" content="${esc(desc)}"><meta name="robots" content="${a.p === 'curated' && b.p === 'curated' ? 'index,follow' : 'noindex,follow'}">`
-    + `<link rel="canonical" href="${pageUrl}"><style>${PAGE_CSS}</style>`
-    + `<script type="application/ld+json">${JSON.stringify(faqJson)}</script></head>`
+    + `<link rel="canonical" href="${pageUrl}"><link rel="alternate" hreflang="x-default" href="${pageUrl}"><link rel="alternate" hreflang="en" href="${pageUrl}"><style>${PAGE_CSS}</style>`
+    + `<script type="application/ld+json">${JSON.stringify(faqJson)}</script>`
+    + `<script type="application/ld+json">${JSON.stringify(orgJson)}</script></head>`
     + `<body><nav><a href="${BASE}/">VoltPrecon</a> › Compare › ${esc(geoName)}</nav><main><h1>${esc(a.mk)} ${esc(a.mo)} vs ${esc(b.mk)} ${esc(b.mo)} — ${esc(geoName)}</h1>`
-    + `<section aria-label="Direct answer"><h2>Direct answer</h2><p><strong>Real range ${rA} km vs ${rB} km (lab ${a.lab}/${b.lab} km). By cost per real kilometre, the ${esc(win.mk)} ${esc(win.mo)} wins in ${esc(geoName)} at current Apr-2026 tariffs. Run your exact km/day in the <a href="${BASE}/?model=${encodeURIComponent(a.id)}">live calculator</a>.</strong></p></section>`
+    + `<section aria-label="Direct answer"><h2>Direct answer</h2><p><strong>Real range ${rA} km vs ${rB} km (lab ${a.lab}/${b.lab} km). By cost per real kilometre, the ${esc(win.mk)} ${esc(win.mo)} wins in ${esc(geoName)} at current ${esc(snapAsOf)} snapshot tariffs. Run your exact km/day in the <a href="${appLink}">live calculator</a>.</strong></p></section>`
     + `<table border="1" cellpadding="6" cellspacing="0"><caption>Same physics, same tariffs — ranked, not sponsored</caption><tr><th>Model</th><th>Real range</th><th>Lab claim</th><th>Price</th><th>Provenance</th></tr>${row(a, rrA, rA, cA)}${row(b, rrB, rB, cB)}</table>`
     + `<h2>${esc(geoName)} energy baseline</h2>${tariffTable(B, g)}`
-    + `<h2>Sources + freshness</h2><p><small>${provenanceLine(a, LASTMOD)} · ${provenanceLine(b, LASTMOD)} · Last reviewed ${LASTMOD} (tariff affirmed ${LASTMOD}, next due per tariffs.json). Cert ${esc(m.cert_id || m.cy)} · PDF receipt in app.</small></p>`
+    + `<h2>Sources + freshness</h2><p><small>${provenanceLine(a, LASTMOD)} · ${provenanceLine(b, LASTMOD)} · Last reviewed ${LASTMOD} (snapshot with SLA, not per-second ticks). Certs ${esc(a.cert_id || a.cy)} / ${esc(b.cert_id || b.cy)}.</small></p>`
     + `</main></body></html>`;
 }
