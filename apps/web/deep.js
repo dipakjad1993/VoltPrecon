@@ -227,6 +227,6 @@ export function loanHTML(p, rr, tco, rs3, F, yrs, subNote, regionCode) {
   return `<h2>VoltPrecon loan summary — ${p.make} ${p.model} ${p.variant} (${p.year})</h2>
   <p><b>YOUR range ${Math.round(rr.realRangeKm)} km</b> (lab ${p.lab_range_km} ${p.cycle}; ${rr.realWhPerKm} Wh/km) · Yr-3 resale ≈ ${F(rs3.value)} (${rs3.pctOfNew}% of paid).</p>
   <p>${yrs}-yr total EV ${F(tco.totalEv)} vs ICE ${F(tco.totalIce)} → ${tco.savings >= 0 ? 'SAVE ' + F(tco.savings) : 'EXTRA ' + F(-tco.savings)}; breakeven ${tco.breakevenMonth === null ? 'beyond window' : 'month ' + tco.breakevenMonth}; ${F(tco.costPerKmEv)}/km vs ${F(tco.costPerKmIce)}/km.</p>
-  <p>${subNote}</p><p>CO₂ saved ~${tco.co2SavedT}t. Method + provenance on voltprecon.app/method.</p>
+  <p>${subNote}</p><p>CO₂ saved ~${tco.co2SavedT}t. Method + provenance documented in the repo docs.</p>
   <p><small>${loanDisclaimer(regionCode)}</small></p>`;
 }
