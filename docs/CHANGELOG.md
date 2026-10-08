@@ -15,7 +15,7 @@
 - **Cascading picker:** brand dropdown → model dropdown (brand-only models, curated first) + full 920-model browsable search with make filter, show-more pagination, and tariff review stamp.
 - **Lazy split:** stage-2/3 deep renderers moved to `apps/web/deep.js` (dynamic import on ANALYZE, SW pre-cached) — shell back to ~47KB of the 60KB budget with headroom.
 - **Brand-purity fix:** estimated placeholders used to borrow real OEM badges ("Bajaj Swift-E") — generator now uses segment-descriptive names ("Scooter E-4"), `check.py` asserts a 90-badge collision list, and smoke resolves every dropdown value back to the bundle to prove brand-purity.
-- **Verified-only brand lists:** brand → model dropdowns and brand-filtered search now show lab-verified EVs exclusively (Bajaj = Chetak + GoGo, nothing else); estimates stay discoverable via unfiltered text search with ⚠ flags. SW shell bumped to v3 so clients receive the new picker.
+- **Verified-only brand lists:** brand → model dropdowns and brand-filtered search now show lab-verified EVs exclusively (Bajaj = Chetak + GoGo, nothing else); estimates stay discoverable via unfiltered text search with [Estimated] flags. SW shell bumped to v3 so clients receive the new picker.
 - **P0 fixed:** silent-expired-subsidy path removed — PM E-DRIVE is date-driven via `packages/engine/src/subsidy.js` (app + API), expiry test-locked, post-subsidy TCO shown, negative countdowns impossible.
 - **Verification ladder published:** `docs/VERIFICATION.md` (T0–T5 with receipts); per-row `source_url` + `verified_on` on all 62 curated rows; "real-time" appears nowhere until a feed with an SLA backs it.
 - **Dynamic SEO renderer:** every one of the 69,000 sitemap URLs now resolves (static fast-path + on-demand render from one shared template) + A-vs-B `/compare/*` pages + expanded `llms.txt` dossier with worked anchors.
@@ -53,7 +53,7 @@
 ## 2026-10-08 — Apple design system + themes (v1.2.0)
 
 - **Typography:** SF Pro system stack everywhere (2026 iPhone font) — app, SEO pages, methodology pages, mono blocks use SF Mono stack. Zero webfont downloads (offline + 350KB budget intact).
-- **Light/dark toggle:** 🌙/☀️ button top-right, persisted, OS-aware default, no-flash pre-paint, `color-scheme` + dynamic `theme-color`.
+- **Light/dark toggle:** Light/Dark button top-right, persisted, OS-aware default, no-flash pre-paint, `color-scheme` + dynamic `theme-color`.
 - **Color scheme:** Apple-gray light theme (#F5F5F7 / #1D1D1F / #06763D) + refined dark brand theme; tabular numerals, focus rings, reduced-motion support.
 
 ## 2026-04-15 — Enterprise SEO + trust release (v1.1.0)

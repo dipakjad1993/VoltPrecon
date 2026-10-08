@@ -27,34 +27,45 @@
 [hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:24px;font-weight:400;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;transition:background-color .25s ease,color .25s ease}
-.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+.skip{position:absolute;left:-999px;top:0;background:var(--acc);color:var(--acc-ink);padding:8px 16px;border-radius:0 0 12px 0;z-index:20}
+.skip:focus{left:0}
 /* M3 small top app bar — sticky navigation */
 .top{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line);transition:background-color .25s ease}
-.topbar{display:flex;align-items:center;gap:8px;min-height:64px}
-.brand{font-size:22px;line-height:28px;font-weight:500;letter-spacing:0;flex:1}
+.topbar{display:flex;align-items:center;gap:12px;min-height:64px}
+.brand{font-size:22px;line-height:28px;font-weight:500;letter-spacing:0;flex:1;white-space:nowrap}
+.sitenav{display:flex;gap:4px}
+.sitenav a{font-size:13px;line-height:20px;font-weight:500;color:var(--mut);text-decoration:none;padding:8px 12px;border-radius:999px}
+.sitenav a:hover{background:var(--card2);color:var(--ink)}
 .tag{background:var(--acc-soft);color:var(--acc-soft-ink);font-size:11px;line-height:16px;font-weight:500;padding:2px 8px;border-radius:8px;vertical-align:middle;letter-spacing:.1px}
 .sub{color:var(--mut);font-size:14px;line-height:20px;padding-bottom:8px}
 /* M3 icon button */
-.theme-toggle{flex:none;width:40px;height:40px;border-radius:50%;border:0;background:transparent;color:var(--ink);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background-color .15s ease}
+.theme-toggle{flex:none;min-width:40px;height:40px;padding:0 10px;border-radius:999px;border:0;background:transparent;color:var(--ink);font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background-color .15s ease}
 .theme-toggle:hover{background:var(--card2)}
 .theme-toggle:active{background:var(--line)}
+.theme-toggle .theme-emoji{font-size:14px;font-weight:700;width:20px;height:20px;border-radius:50%;background:var(--line);display:inline-flex;align-items:center;justify-content:center}
 /* M3 elevated card */
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-xl);padding:20px;margin:16px 0;box-shadow:var(--shadow);transition:background-color .25s ease,border-color .25s ease}
+.card h2{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px}
 h2{font-size:22px;line-height:28px;font-weight:500;margin:0 0 12px}
 h3{font-size:16px;line-height:24px;font-weight:500;margin:16px 0 8px}
+.sect{font-size:13px;line-height:20px;font-weight:500;letter-spacing:.4px;text-transform:uppercase;color:var(--mut);border-bottom:1px solid var(--line);padding-bottom:6px;margin:20px 0 8px}
 .prov{font-size:12px;line-height:16px;color:var(--mut);font-weight:400}
 /* M3 text field + select */
 input,select{width:100%;padding:12px 16px;border-radius:var(--r-lg);border:1px solid var(--line);background:var(--card2);color:var(--ink);font-size:16px;line-height:24px;font-family:var(--font);transition:border-color .15s ease,background-color .25s ease}
 input:focus,select:focus{border-color:var(--acc);outline:2px solid var(--acc);outline-offset:-1px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
 label{font-size:12px;line-height:16px;font-weight:500;color:var(--mut);display:block;letter-spacing:.2px}
 label b{color:var(--ink)}
 label input,label select{margin-top:4px}
-.hits{max-height:240px;overflow:auto;margin-top:8px}
-.hit{padding:12px 16px;border-bottom:1px solid var(--line);cursor:pointer;border-radius:12px;font-size:14px;line-height:20px}
+label.span2{grid-column:1/-1}
+.hits{max-height:240px;overflow:auto;margin-top:8px;border:1px solid var(--line);border-radius:12px}
+.hit{padding:12px 16px;border-bottom:1px solid var(--line);cursor:pointer;border-radius:0;font-size:14px;line-height:20px}
+.hit:last-child{border-bottom:0}
 .hit:hover,.hit:focus{background:var(--card2)}
 .hit small{color:var(--mut)}
 .picked{background:var(--acc-soft);color:var(--acc-soft-ink);padding:12px 16px;border-radius:var(--r-lg);margin-top:8px;font-size:14px;line-height:20px}
+#autoNote{margin-top:8px}
 /* M3 extended FAB — primary action */
 .go{width:100%;margin-top:16px;padding:16px 24px;min-height:56px;font-size:15px;line-height:20px;font-weight:500;letter-spacing:.1px;border:0;border-radius:20px;background:var(--acc);color:var(--acc-ink);cursor:pointer;font-family:var(--font);box-shadow:var(--shadow);transition:transform .12s ease,filter .15s ease;display:flex;align-items:center;justify-content:center;gap:8px}
 .go:hover{filter:brightness(1.07)}
@@ -84,9 +95,11 @@ label input,label select{margin-top:4px}
 .hint a,.foot a{color:var(--acc)}
 .foot{font-size:12px;line-height:16px;color:var(--mut);padding:20px 4px}
 .err{background:var(--card2);border:1px solid var(--danger);color:var(--ink);padding:12px 16px;border-radius:var(--r-lg);margin:12px 0;font-size:14px;line-height:20px}
-.toolbar{display:flex;gap:12px;margin-top:4px;padding-bottom:12px}.toolbar label{flex:1}
-/* M3 data table — dividers, no boxes */
-.spec{width:100%;border-collapse:collapse;font-size:14px;line-height:20px;margin:8px 0}
+.toolbar{display:flex;gap:12px;margin-top:4px;padding-bottom:12px;align-items:end}.toolbar label{flex:1}
+.toolbar.prefs{max-width:420px}
+/* M3 data table — dividers, no boxes; scroll on narrow screens */
+.deep,#rivals{overflow-x:auto}
+.spec{width:100%;min-width:520px;border-collapse:collapse;font-size:14px;line-height:20px;margin:8px 0}
 .spec th{font-size:12px;line-height:16px;font-weight:500;letter-spacing:.2px;color:var(--mut);text-align:left;padding:8px;border-bottom:1px solid var(--line)}
 .spec td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
 .spec tr:last-child td{border-bottom:0}
@@ -96,8 +109,10 @@ label input,label select{margin-top:4px}
 .subhead{font-size:14px;line-height:20px;font-weight:500;margin:16px 0 4px}
 .vs-bad{color:var(--danger);font-weight:500}.vs-good{color:var(--acc);font-weight:500}
 /* M3 segmented stepper */
-.stepper ol{list-style:none;display:flex;gap:8px;margin:16px 0 0;padding:0}
-.stepper li{flex:1;display:flex;align-items:center;gap:8px;font-size:14px;line-height:20px;font-weight:500;color:var(--faint);background:var(--card2);border:0;border-radius:var(--r-pill);padding:8px 12px;cursor:pointer}
+.stepper{position:sticky;top:64px;z-index:9;background:var(--bg);padding:8px 0}
+.stepper ol{list-style:none;display:flex;gap:8px;margin:8px 0 0;padding:0}
+.stepper li{flex:1;display:flex;align-items:center;gap:8px;font-size:14px;line-height:20px;font-weight:500;color:var(--faint);background:var(--card2);border:0;border-radius:16px;padding:8px 12px;cursor:pointer;min-height:56px}
+.st-t{display:flex;flex-direction:column;line-height:18px}.st-t small{font-size:11px;font-weight:400;color:inherit;opacity:.8}
 .stepper li:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .stepper li .n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--line);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:12px;line-height:16px}
 .stepper li[aria-current="step"]{background:var(--acc-soft);color:var(--acc-soft-ink)}
@@ -105,6 +120,6 @@ label input,label select{margin-top:4px}
 .stepper li.done{color:var(--mut)}
 .hit:focus,.hit:focus-visible,.rival:focus,.rival:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .print-only{display:none}
-@media print{.top,#step1,#step1b,.stepper,.foot,.btnrow,details,.go,#stage2sec,.linklike{display:none!important}.print-only{display:block!important;color:#000}.card{border:0;background:#fff;color:#000}body{background:#fff}}
-@media(max-width:520px){.grid{grid-template-columns:1fr 1fr}.heroGrid{grid-template-columns:1fr 1fr}}
+@media print{.top,#step1,#step1b,.stepper,.foot,.btnrow,details,.go,#stage2sec,.linklike,.sitenav,.skip{display:none!important}.print-only{display:block!important;color:#000}.card{border:0;background:#fff;color:#000}body{background:#fff}}
+@media(max-width:640px){.grid{grid-template-columns:1fr}.heroGrid{grid-template-columns:1fr 1fr}.sitenav{display:none}.stepper{top:57px}.spec{min-width:480px}.btnrow{flex-direction:column}.btnrow button{width:100%}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}

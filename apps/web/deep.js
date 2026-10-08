@@ -34,7 +34,7 @@ export function renderRangeDeep(ctx, { rr, rrInput, cityFrac }) {
   const honest = rr.honestLabKm;
   const cycRows = ['ARAI', 'WLTP', 'EPA', 'CLTC', 'IDC'].map((c) => {
     const o = OPTIMISM[c] ?? 1.15;
-    const you = c === picked.cycle ? ' ★ yours' : '';
+    const you = c === picked.cycle ? ' (you)' : '';
     return `<tr><td>${c}${you}</td><td class="num">÷${o.toFixed(2)}</td><td class="num">${Math.round(honest * o)} km</td><td class="num">+${Math.round((o - 1) * 100)}%</td></tr>`;
   }).join('');
   // A2-extra: load sensitivity — same engine, varied humans/cargo.
@@ -50,7 +50,7 @@ export function renderRangeDeep(ctx, { rr, rrInput, cityFrac }) {
     const r = over ? rrRun(rrInput, over) : rr;
     if (!r) return '';
     const dl = Math.round(r.realRangeKm - rr.realRangeKm);
-    const mark = over ? '' : ' ★';
+    const mark = over ? '' : ' (you)';
     return `<tr><td>${label}${mark}</td><td class="num">${d(r.realRangeKm)}</td><td class="num">${dl >= 0 ? '+' : ''}${dl}</td><td class="num">${r.realWhPerKm} Wh/km</td></tr>`;
   }).join('');
   // A3-extra: climate sweep — same engine, varied thermometer.
@@ -59,7 +59,7 @@ export function renderRangeDeep(ctx, { rr, rrInput, cityFrac }) {
     const r = tc === yourT ? rr : rrRun(rrInput, { tempC: tc });
     if (!r) return '';
     const dl = Math.round((r.realRangeKm / (rrRun(rrInput, { tempC: 25 }) || rr).realRangeKm - 1) * 100);
-    const mark = tc === yourT ? ' ★ yours' : '';
+    const mark = tc === yourT ? ' (you)' : '';
     return `<tr><td class="num">${tc}°C${mark}</td><td class="num">${d(r.realRangeKm)}</td><td class="num">${dl >= 0 ? '+' : ''}${dl}% vs 25°C</td><td class="num">${r.factors.hvacKw} kW HVAC</td></tr>`;
   }).join('');
   // A4-extra: speed sweep — same engine, varied right wrist.
@@ -67,13 +67,13 @@ export function renderRangeDeep(ctx, { rr, rrInput, cityFrac }) {
   const speeds = [40, 60, 80, 100, 120].filter((s) => !picked.top_speed || s <= picked.top_speed + 10).map((s) => {
     const r = s === yourV ? rr : rrRun(rrInput, { speedKph: s });
     if (!r) return '';
-    const mark = s === yourV ? ' ★ yours' : '';
+    const mark = s === yourV ? ' (you)' : '';
     return `<tr><td class="num">${s} kph${mark}</td><td class="num">${d(r.realRangeKm)}</td><td class="num">${r.realWhPerKm} Wh/km</td><td class="num">×${r.factors.speedMult}</td></tr>`;
   }).join('');
   // A5-extra: chemistry × year SoH matrix — same fade model, all six families.
   const chRows = CHEM_COLS.map((ch) => {
     const cells = [1, 3, 5, 8].map((y) => `<td class="num">${(sohFor(ch, y, dcfc) * 100).toFixed(1)}%</td>`).join('');
-    const mark = ch === picked.chemistry ? ' ★ yours' : '';
+    const mark = ch === picked.chemistry ? ' (you)' : '';
     return `<tr><td>${ch}${mark}</td>${cells}</tr>`;
   }).join('');
   $('rangeDeep').innerHTML =
@@ -131,7 +131,7 @@ export function renderTcoDeep(ctx, { t, rr, tco, disp, yrs, seg2, md, priceEv, i
     .map((g) => {
       const gs = curSym(g.code);
       const per100 = (rr.realWhPerKm / 1000) * 100 * g.home_kwh;
-      const you = g.code === t.code ? ' ★ yours' : '';
+      const you = g.code === t.code ? ' (you)' : '';
       return `<tr><td>${g.country}${you}</td><td class="num">${gs}${g.home_kwh}</td><td class="num">${gs}${g.dcfc_kwh}</td><td class="num">${gs}${g.petrol_per_L}/L</td><td class="num"><b>${gs}${per100.toFixed(per100 < 10 ? 2 : 0)}</b></td></tr>`;
     }).join('');
   // B4: breakeven trajectory — the same monthly math as the page-3 chart, as a table.
@@ -203,10 +203,10 @@ export function renderBattDeep(ctx, { rr, disp, seg2, priceEv, sub }) {
     + (dcfc > 0.4 ? `<div class="callout"><b>DCFC share above 40%:</b> expected pack life −15–25%. Shifting 2 sessions/week to slow charging pays back in resale (see page 3).</div>` : '')
     + `<div class="subhead">C3 · Why competitors lose — feature matrix, no marketing</div>`
     + `<table class="spec"><tr><th>Tool</th><th class="num">2W + 3W</th><th class="num">Your pillion/cargo</th><th class="num">Weather in math</th><th class="num">Price</th></tr>`
-    + `<tr><td>ABRP</td><td class="num">✗ 4W-only</td><td class="num">✗</td><td class="num">paywalled API</td><td class="num">freemium</td></tr>`
-    + `<tr><td>OEM calculators</td><td class="num">✗ showcase models</td><td class="num">✗ lab mass</td><td class="num">✗ lab temp</td><td class="num">biased doorway</td></tr>`
-    + `<tr><td>WoodMac / EV-Volumes</td><td class="num">✓ fleets</td><td class="num">✗</td><td class="num">✗ static PDF</td><td class="num">~$25k</td></tr>`
-    + `<tr><td><b>VoltPrecon (this page)</b></td><td class="num"><b>✓ 920 models</b></td><td class="num"><b>✓ per-kg</b></td><td class="num"><b>✓ per-°C</b></td><td class="num"><b>free offline</b></td></tr></table>`
+    + `<tr><td>ABRP</td><td class="num">No (4W-only)</td><td class="num">No</td><td class="num">paywalled API</td><td class="num">freemium</td></tr>`
+    + `<tr><td>OEM calculators</td><td class="num">No (showcase models)</td><td class="num">No (lab mass)</td><td class="num">No (lab temp)</td><td class="num">biased doorway</td></tr>`
+    + `<tr><td>WoodMac / EV-Volumes</td><td class="num">Yes (fleets)</td><td class="num">No</td><td class="num">No (static PDF)</td><td class="num">~$25k</td></tr>`
+    + `<tr><td><b>VoltPrecon (this page)</b></td><td class="num"><b>Yes (920 models)</b></td><td class="num"><b>Yes (per-kg)</b></td><td class="num"><b>Yes (per-C)</b></td><td class="num"><b>free offline</b></td></tr></table>`
     + `<div class="callout"><b>Why this beats the alternatives:</b> Recurrent/AVILOO test health but don't connect it to your money. Dealers quote resale from vibes. Here SoH feeds the resale formula directly — and documented variance up to 13.5% (AVILOO 500k tests) is why you get a battery test before buying used.</div>`;
 }
 export function renderSoh(ctx, { dcfcFrac, odoKm }) {

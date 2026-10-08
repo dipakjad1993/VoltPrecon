@@ -74,17 +74,17 @@ summaries). Re-verify quarterly — this file rots faster than the physics does.
 
 | Capability | VoltPrecon | ABRP | OEM calc | WoodMac | Recurrent | Spec sites | Reddit |
 |---|---|---|---|---|---|---|---|
-| 2W/3W physics | ✅ | ❌ | partial | ❌ | ❌ | ❌ | anecdotal |
-| 4W physics + climate | ✅ | ✅ (4W) | lab only | ❌ | ❌ | ❌ | anecdotal |
-| True 5-yr TCO + breakeven month | ✅ | ❌ | cherry-picked | static | ❌ | ❌ | ❌ |
-| Honest "no breakeven" | ✅ | n/a | never | n/a | n/a | n/a | sometimes |
-| 25-country tariffs + override | ✅ | ❌ | home only | ❌ | ❌ | ❌ | ❌ |
-| Subsidy auto-expiry (tested) | ✅ | ❌ | marketing | ❌ | ❌ | ❌ | ❌ |
-| SoH → resale linkage | ✅ | ❌ | ❌ | ❌ | health only | ❌ | ❌ |
-| Offline PWA <350KB, no login | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | n/a |
-| Programmatic SEO (69k URLs, staged) | ✅ | partial | ❌ | ❌ | ❌ | ✅ (thin) | n/a |
-| Owner-aggregate flywheel | building (T4) | ❌ | ❌ | ❌ | ✅ (B2B) | ❌ | ✅ (chaotic) |
-| Live tariff feeds | ❌ (snapshot+SLA) | partial (paywalled) | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 2W/3W physics | Yes | No | partial | No | No | No | anecdotal |
+| 4W physics + climate | Yes | Yes (4W) | lab only | No | No | No | anecdotal |
+| True 5-yr TCO + breakeven month | Yes | No | cherry-picked | static | No | No | No |
+| Honest "no breakeven" | Yes | n/a | never | n/a | n/a | n/a | sometimes |
+| 25-country tariffs + override | Yes | No | home only | No | No | No | No |
+| Subsidy auto-expiry (tested) | Yes | No | marketing | No | No | No | No |
+| SoH → resale linkage | Yes | No | No | No | health only | No | No |
+| Offline PWA <350KB, no login | Yes | No | No | No | No | No | n/a |
+| Programmatic SEO (69k URLs, staged) | Yes | partial | No | No | No | Yes (thin) | n/a |
+| Owner-aggregate flywheel | building (T4) | No | No | No | Yes (B2B) | No | Yes (chaotic) |
+| Live tariff feeds | No (snapshot+SLA) | partial (paywalled) | No | No | No | No | No |
 
 ## 4 · Moat math
 

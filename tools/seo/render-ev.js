@@ -158,7 +158,7 @@ export function renderEvPage({ realRange, B, ranked, BASE, LASTMOD, m, g, it, dy
     + `<main><h1>${esc(it.h1(m))} — ${esc(geoName)} · ${esc(moneyBit)}</h1>`
     + `<section aria-label="Direct answer"><h2>Direct answer (40-second read)</h2><p><strong>${esc(answer)}</strong></p></section>`
     + `<p><strong>YOUR range ≈ ${realKm} km${mphBit} (±${conf.km} km)</strong>, not the ${m.lab} km lab figure (${m.cy}). ${rr.narrative.map(esc).join(' ')}</p>`
-    + `<p>Battery ${m.kwh} kWh ${esc(m.ch)} · provenance: <strong>${m.p === 'curated' ? '✅ lab-verified (spec verified Apr-2026)' : `⚠ parametric estimate — ${esc(conf.label)}`}</strong>. ABRP doesn't cover your ${esc(m.s)} scooter/3W segment — this page does, with physics + local tariffs.</p>`
+    + `<p>Battery ${m.kwh} kWh ${esc(m.ch)} · provenance: <strong>${m.p === 'curated' ? '[Verified] lab-verified (spec verified Apr-2026)' : `[Estimated] parametric estimate — ${esc(conf.label)}`}</strong>. ABRP doesn't cover your ${esc(m.s)} scooter/3W segment — this page does, with physics + local tariffs.</p>`
     + `<h2>${esc(geoName)} energy baseline (rendered table, not hidden JSON)</h2>${tariffTable(B, g)}`
     + `<h2>Your interactive estimate (same numbers as the app)</h2><div><p>Speed 70/50 kph · city 60% · 32°C AC-med → <strong>${realKm} km at ${rr.realWhPerKm} Wh/km</strong>, SoH ${rr.sohPct}% (new). Change rider/load/temp in the <a href="${appUrl}">live calculator — no login, works offline</a>.</p>`
     + `<p><a href="${appUrl}">Compute YOUR numbers free — no login</a> · <a href="${BASE}/method/normalizer/">How the math works</a></p></div>`
@@ -183,7 +183,7 @@ export function renderComparePage({ realRange, B, BASE, LASTMOD, a, b, g }) {
   const title = `${a.mk} ${a.mo} vs ${b.mk} ${b.mo} — Real Range + True Cost (${geoName}) | VoltPrecon`;
   const desc = `${a.mk} ${a.mo} ≈ ${rA}km real vs ${b.mk} ${b.mo} ≈ ${rB}km real (lab ${a.lab}/${b.lab}km). Same physics, same ${geoName} tariffs, ranked by ₹/real-km. No login.`;
   const faqJson = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [{ '@type': 'Question', name: `Which is better value: ${a.mk} ${a.mo} or ${b.mk} ${b.mo}?`, acceptedAnswer: { '@type': 'Answer', text: `By cost per real km in ${geoName}, the ${win.mk} ${win.mo} wins. Real ranges: ${rA}km vs ${rB}km. Both are physics-computed, not lab claims.` } }] };
-  const row = (m, rr, r, c) => `<tr><td><b>${esc(m.mk)} ${esc(m.mo)}</b> ${esc(m.v)}</td><td class="num">${r} km</td><td class="num">${m.lab} km (${esc(m.cy)})</td><td class="num">${esc(curFmt(B, g, m.inr || 1200000))}</td><td class="num">${esc(m.p === 'curated' ? '✅ verified' : '⚠ estimated')}</td></tr>`;
+  const row = (m, rr, r, c) => `<tr><td><b>${esc(m.mk)} ${esc(m.mo)}</b> ${esc(m.v)}</td><td class="num">${r} km</td><td class="num">${m.lab} km (${esc(m.cy)})</td><td class="num">${esc(curFmt(B, g, m.inr || 1200000))}</td><td class="num">${esc(m.p === 'curated' ? '[Verified]' : '[Estimated]')}</td></tr>`;
   const orgJson = { '@context': 'https://schema.org', '@type': 'Organization', name: 'VoltPrecon', url: BASE, logo: `${BASE}/icon-512.png`, sameAs: ['https://www.linkedin.com/company/voltprecon', 'https://x.com/voltprecon'], knowsAbout: ['EV real-world range physics', 'EV total cost of ownership', 'battery state of health', 'EV resale forecasting'] };
   const snapAsOf = (B.meta && B.meta.verification && B.meta.verification.t2_tariff_as_of) || 'Apr-2026';
   const appLink = BASE + '/?model=' + encodeURIComponent(a.id);

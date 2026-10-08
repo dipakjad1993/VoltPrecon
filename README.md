@@ -1,11 +1,11 @@
-# ⚡ VoltPrecon — Universal EV Truth Engine
+# VoltPrecon — Universal EV Truth Engine
 
 **One URL. Pick any EV, get the truth.** Real range (not lab) + true 5-yr cost
 vs petrol + resale — for **920 2W/3W/4W models (78 lab-verified + 842
 estimates) across 25 tariff geos**. No login. No API key. Offline PWA that
 works on a $120 Android on 3G (first load < 350 KB).
 
-> SEMrush + CarFax + Calculator had a baby — and it wasn't lying for affiliate commission.
+> SEMrush + CarFax + Calculator had a baby — and it was not lying for affiliate commission.
 
 ## The 3-page tool
 
@@ -16,7 +16,21 @@ works on a $120 Android on 3G (first load < 350 KB).
 | **3 · Outputs** | YOUR range hero, 5-yr savings, breakeven month, cost/km, yr-3 resale, breakeven chart + data table, ranked top-3 rivals, battery passport, owner-verified range, 1-page loan PDF | Needs a completed analysis |
 
 The stepper (1 Inputs · 2 Analysis · 3 Outputs) is clickable with the same
-guards — no empty-results page is reachable.
+guards — no empty-results page is reachable. A section nav (Inputs / Analysis /
+Outputs / Method) sits in the sticky header alongside language, units, and the
+Light/Dark theme toggle.
+
+### Smart defaults (auto-select)
+
+Picking a model, city, or tariff auto-fills the dependent ride fields so a
+first-time user gets a sane estimate in one click. Everything auto-set stays
+editable, and the note under the model card always states what was auto-set:
+
+- **Pick a model** → km/day, city %, cruise speed, home-charging and DCFC share
+  default by segment (2W city commute / 3W commercial duty / 4W mixed use).
+- **Pick a city preset** → temperature and tariff sync to that city.
+- **Change the tariff** → city preset and temperature auto-match the tariff's
+  representative city, so country and city can never silently disagree.
 
 ### A · Physics-Based Real Range Engine (offline, 5 sub-models)
 
@@ -28,9 +42,9 @@ guards — no empty-results page is reachable.
 
 ### B · True TCO Assassin (4 sub-models)
 
-- **B1 Energy cost** — Apr-2026 fuel + home/fast tariffs pre-loaded (MH slab ~₹9.5 vs Texas $0.13 vs Germany ~$0.41 vs Vietnam EVN), plus your-100-km around the world.
+- **B1 Energy cost** — Apr-2026 fuel + home/fast tariffs pre-loaded (MH slab ~Rs 9.5 vs Texas $0.13 vs Germany ~$0.41 vs Vietnam EVN), plus your-100-km around the world.
 - **B2 Subsidy autopilot** — PM E-DRIVE (till 31 Jul 2026), GST 5 %, US IRA logic, FR/DE/ID schemes. Auto-applied, auto-expired, never silent.
-- **B3 Opex** — maintenance (2W ₹0.30/km EV vs ₹1.20 ICE) + insurance + tyres + WoodMac 2026 pack prices (LFP ~$85/kWh).
+- **B3 Opex** — maintenance (2W Rs 0.30/km EV vs Rs 1.20 ICE) + insurance + tyres + WoodMac 2026 pack prices (LFP ~$85/kWh).
 - **B4 Breakeven trajectory** — month 0 → horizon with *"You break even at month N. Not vibes. Math."*
 
 ### C · Battery Passport Lite (3 sub-models)
@@ -39,10 +53,10 @@ guards — no empty-results page is reachable.
 - **C2 SoH trajectory** at your fast-charge share (photos/cycles estimator on page 3).
 - **C3 Competitor matrix** — ABRP (4W-only + paywall) vs OEM calculators (biased) vs WoodMac/EV-Volumes (~$25k static PDF) vs this page.
 
-## Verification ladder (not a "100% verified" slogan)
+## Verification ladder (not a slogan)
 
-No serious buyer believes "100% verified real-time". They believe ladders with
-evidence — ours is published in `docs/VERIFICATION.md` and enforced in CI:
+No serious buyer believes slogans. They believe ladders with evidence — ours is
+published in `docs/VERIFICATION.md` and enforced in CI:
 
 | Tier | State |
 |---|---|
@@ -51,7 +65,7 @@ evidence — ours is published in `docs/VERIFICATION.md` and enforced in CI:
 | T2 snapshot | **Tariffs + fuel, stamped Apr-2026, affirmed 2026-10-08, next due 2026-11-22**, 45-day freshness SLA + `tariffs_history` |
 | T3 parametric | **842 estimated models, seed-42**, flagged + confidence-banded + per-page `noindex` |
 | T4 owner aggregates | `/api/v1/owner-range` → nightly rollup → pages (pipeline live, aggregates accrue) |
-| T5 real-time | **Not claimed.** Snapshots with SLAs, not websockets |
+| T5 snapshots | **Not claimed as live.** Snapshots with SLAs, not websockets |
 
 Enterprise sentence: *"78 lab-verified specs with OEM source receipts, 14
 test-locked physics invariants, snapshot tariffs with published
@@ -90,12 +104,11 @@ Staging preview: `docker compose --profile staging up` (app :8081, api :3002).
 
 ## Truth guarantees
 
-- Every model shows **provenance**: ✅ lab-verified vs ⚠ parametric estimate. Estimates never masquerade.
+- Every model shows **provenance**: [Verified] lab-verified vs [Estimated] parametric estimate. Estimates never masquerade.
 - Engine says **no breakeven** when math says so (Nexon @40 km/d → beyond 5y; Ola S1X → month ~19).
-- Subsidies **auto-expire by date, tested** (PM E-DRIVE ended 31 Jul 2026 → ₹0 post-subsidy TCO, never a negative countdown).
+- Subsidies **auto-expire by date, tested** (PM E-DRIVE ended 31 Jul 2026 → Rs 0 post-subsidy TCO, never a negative countdown).
 - Tariffs stamped + affirmed with a 45-day review SLA; user-overridable in-app.
 - Spec links resolve to **verified OEM sources** (never synthetic deep-PDF guesses that 404).
-- The word **"real-time" appears nowhere** in product, pages, or API until a feed with an SLA backs it.
 
 ## Monetization (no user fees)
 

@@ -9,7 +9,7 @@ Optimism (from ~1,900 paired lab-vs-telematics points: AVILOO 500k tests, Geotab
 - `eReal = physics(v, mReal, HVAC+elec) × (1 − regen·cityFrac)` — regen 2W .12 / 3W .10 / 4W .18; aero calibrated ×0.8 (2W, tucked rider) / ×0.9 (3W).
 - `resistance(T,chem)`: cold 1+(10−T)·k (LFP .012 … Na-ion .004); heat 1+(T−33)·.008. HVAC kW modeled separately (PTC 3.2 vs heat-pump 1.1; scooter 0.25–0.3; +0.5 battery chiller >38 °C cars).
 - `SoH(t)`: piecewise y1/y3/y5/y8 per chemistry + DCFC penalty (NMC 0.6 %/10pp/yr-ish, LFP 0.15 %).
-- Canonical checks: **Pune Ather 195 ARAI → ~97 mixed (pillion, 55 kph, 38 °C)**; **Model Y EPA 531 → ~348 km (216 mi) Michigan −7 °C @120 kph heater** (anecdote 212 mi ✓); Delhi Nexon 45 → ~290 km @42 °C.
+- Canonical checks: **Pune Ather 195 ARAI → ~97 mixed (pillion, 55 kph, 38 °C)**; **Model Y EPA 531 → ~348 km (216 mi) Michigan −7 °C @120 kph heater** (anecdote 212 mi, confirmed); Delhi Nexon 45 → ~290 km @42 °C.
 
 ## 3. True TCO (month 0–84, stable breakeven)
 Capex − subsidy + Σ(energy @blended home/DCFC + maint + declining-IDV insurance + tyres + battery reserve + loan interest) vs ICE (fuel + higher maint). Monthly schedule uses the **same yearly components as the totals** (declining insurance included), so monthly and horizon can never disagree. **Breakeven = first month cumulative EV ≤ ICE AND horizon favors EV** — a first-crossing that later reverses (cheap to buy, expensive to run) reports `null`, not a trophy month. Defaults: 2W EV ₹0.30/km vs ICE ₹1.20/km; 4W EV ₹0.90 vs ₹4.20. CO₂: fuel 2.31 kg/L vs grid g/kWh per country.
